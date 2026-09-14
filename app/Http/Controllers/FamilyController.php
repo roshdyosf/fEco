@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Family;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
@@ -16,9 +17,9 @@ class FamilyController extends Controller
         /** @var User $user */
         $user = Auth::user();
         if ($user->family_id) {
-            return redirect('/dashboard');
+            return redirect()->route('dashboard');
         }
-        return view('family.setup');
+        return Inertia::render('Family/Setup');
     }
 
     // Family creation logic
@@ -34,7 +35,7 @@ class FamilyController extends Controller
         // Create the family
         $family = Family::create([
             'name' => $request->name,
-            'invite_code' => strtoupper(Str::random(8)),
+            'invite_code' => Str::upper(Str::random(8)),
             'total_balance' => 0.00,
         ]);
 
@@ -46,7 +47,7 @@ class FamilyController extends Controller
             $user->assignRole('family-head');
         }
 
-        return redirect('/dashboard')->with('success', 'Family created successfully! Your invite code is: ' . $family->invite_code);
+        return redirect()->route('dashboard')->with('success', 'Family created successfully! Your invite code is: ' . $family->invite_code);
     }
 
     // Join family using invite code
