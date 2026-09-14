@@ -1,95 +1,121 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3';
+import { Head, useForm } from "@inertiajs/vue3";
+import InputError from "@/components/InputError.vue";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
+// فورم الإنشاء
 const createForm = useForm({
-    name: '',
+    name: "",
 });
 
+// فورم الانضمام
 const joinForm = useForm({
-    invite_code: '',
+    invite_code: "",
 });
 
 const submitCreate = () => {
-    createForm.post('/family/create');
+    createForm.post("/family/create");
 };
 
 const submitJoin = () => {
-    joinForm.post('/family/join');
+    joinForm.post("/family/join");
 };
 </script>
 
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-            <div>
-                <h2 class="text-center text-3xl font-extrabold text-gray-900">
-                    Welcome to Family Finance 👋
-                </h2>
-                <p class="mt-2 text-center text-sm text-gray-600">
-                    To get started, please create a new family or join an existing one using an invite code.
-                </p>
-            </div>
+    <Head title="Family Setup" />
 
-            <div class="mt-8 space-y-6">
-                <!-- Create Family Form -->
-                <div class="p-6 bg-blue-50 rounded-lg border border-blue-100">
-                    <h3 class="text-lg font-bold text-blue-900 mb-2">Create a New Family</h3>
-                    <p class="text-xs text-blue-700 mb-4">You will be designated as the family head and receive an invite code.</p>
+    <div
+        class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+    >
+        <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+            <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+                Welcome to Family Tracker
+            </h2>
+            <p class="mt-2 text-sm text-gray-600">
+                To continue, please create a new family or join an existing one.
+            </p>
+        </div>
 
-                    <form @submit.prevent="submitCreate">
-                        <div class="mb-4">
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Family Name</label>
-                            <input
-                                type="text"
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div
+                class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 space-y-8"
+            >
+                <!-- Create Family -->
+                <div>
+                    <h3
+                        class="text-lg font-medium text-gray-900 mb-4 border-b pb-2"
+                    >
+                        Create a New Family
+                    </h3>
+                    <form @submit.prevent="submitCreate" class="space-y-4">
+                        <div>
+                            <Label for="name">Family Name</Label>
+                            <Input
                                 id="name"
+                                type="text"
                                 v-model="createForm.name"
                                 required
-                                class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                                placeholder="e.g., Al-Rashed Family"
-                            >
-                            <span v-if="createForm.errors.name" class="text-red-500 text-xs mt-1">{{ createForm.errors.name }}</span>
+                                placeholder="e.g. Rashed Family"
+                                class="mt-1"
+                            />
+                            <InputError
+                                :message="createForm.errors.name"
+                                class="mt-2"
+                            />
                         </div>
-                        <button
+                        <Button
                             type="submit"
+                            class="w-full"
                             :disabled="createForm.processing"
-                            class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
                         >
                             Create Family
-                        </button>
+                        </Button>
                     </form>
                 </div>
 
                 <div class="relative flex py-2 items-center">
-                    <div class="flex-grow border-t border-gray-300"></div>
-                    <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
-                    <div class="flex-grow border-t border-gray-300"></div>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span
+                        class="flex-shrink mx-4 text-gray-400 text-sm font-medium uppercase"
+                        >Or</span
+                    >
+                    <div class="flex-grow border-t border-gray-200"></div>
                 </div>
 
-                <!-- Join Family Form -->
-                <div class="p-6 bg-gray-50 rounded-lg border border-gray-200">
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Join an Existing Family</h3>
-                    <p class="text-xs text-gray-600 mb-4">Enter the invite code shared by your family head.</p>
-
-                    <form @submit.prevent="submitJoin">
-                        <div class="mb-4">
-                            <label for="invite_code" class="block text-sm font-medium text-gray-700 mb-1">Invite Code</label>
-                            <input
-                                type="text"
+                <!-- Join Family -->
+                <div>
+                    <h3
+                        class="text-lg font-medium text-gray-900 mb-4 border-b pb-2"
+                    >
+                        Join Existing Family
+                    </h3>
+                    <form @submit.prevent="submitJoin" class="space-y-4">
+                        <div>
+                            <Label for="invite_code">Invite Code</Label>
+                            <Input
                                 id="invite_code"
+                                type="text"
                                 v-model="joinForm.invite_code"
                                 required
-                                class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-400 text-gray-900 uppercase focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                placeholder="e.g., A8B9C2D1"
-                            >
-                            <span v-if="joinForm.errors.invite_code" class="text-red-500 text-xs mt-1">{{ joinForm.errors.invite_code }}</span>
+                                placeholder="Enter code here"
+                                class="mt-1"
+                            />
+                            <InputError
+                                :message="joinForm.errors.invite_code"
+                                class="mt-2"
+                            />
                         </div>
-                        <button
+                        <Button
                             type="submit"
+                            variant="secondary"
+                            class="w-full bg-gray-100 hover:bg-gray-200 text-gray-900"
                             :disabled="joinForm.processing"
-                            class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-900 focus:outline-none"
                         >
                             Join Family
-                        </button>
+                        </Button>
                     </form>
                 </div>
             </div>
