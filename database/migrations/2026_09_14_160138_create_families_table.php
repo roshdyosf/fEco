@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('families', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('invite_code')->unique();
             $table->decimal('total_balance', 12, 2)->default(0.00);
             $table->timestamps();
         });
