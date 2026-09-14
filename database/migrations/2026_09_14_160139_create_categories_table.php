@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('family_id')->constrained('families')->cascadeOnDelete();
+            $table->string('name');
+            $table->enum('type', ['expense', 'income']); // مصروف ولا إيراد
             $table->timestamps();
         });
     }

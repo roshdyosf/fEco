@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('family_id')->constrained('families')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
+            $table->decimal('amount', 10, 2);
+            $table->enum('type', ['expense', 'income']);
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
