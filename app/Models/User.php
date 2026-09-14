@@ -39,6 +39,18 @@ class User extends Authenticatable implements PasskeyUser
      *
      * @return array<string, string>
      */
+    protected $fillable = [
+        'family_id',
+        'name',
+        'email',
+        'google_id',
+        'avatar',
+        'password',
+    ];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
     protected function casts(): array
     {
         return [
@@ -46,5 +58,17 @@ class User extends Authenticatable implements PasskeyUser
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+
+
+    public function family()
+    {
+        return $this->belongsTo(Family::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
     }
 }

@@ -9,4 +9,22 @@ class Category extends Model
 {
     /** @use HasFactory<\Database\Factories\CategoryFactory> */
     use HasFactory;
+
+
+
+    protected $fillable = [
+        'family_id',
+        'name',
+        'type',
+    ];
+
+    public function family()
+    {
+        return $this->belongsTo(Family::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }
