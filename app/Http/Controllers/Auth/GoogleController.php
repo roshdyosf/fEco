@@ -27,13 +27,10 @@ class GoogleController extends Controller
                 ->first();
 
             if ($user) {
-                // Update the user's Google ID and avatar if they exist but don't have a Google ID
-                if (!$user->google_id) {
-                    $user->update([
-                        'google_id' => $googleUser->id,
-                        'avatar' => $googleUser->avatar,
-                    ]);
-                }
+                // Update existing user attributes safely using save()
+                $user->google_id = $googleUser->id;
+                $user->avatar = $googleUser->avatar;
+                $user->save();
             } else {
                 // Create a new user if not found
                 $user = User::create([
@@ -44,6 +41,9 @@ class GoogleController extends Controller
                     'avatar' => $googleUser->avatar,
                     'password' => bcrypt(Str::random(16)),
                 ]);
+                if (method_exists($user, 'assignRole')) {
+                    $user->assignRole('family-member');
+                }
             }
             //login the user
             Auth::login($user);
@@ -58,5 +58,4 @@ class GoogleController extends Controller
             return redirect('/login')->with('error', 'Failed to login with Google: ' . $e->getMessage());
         }
     }
-
 }
