@@ -23,7 +23,7 @@ class DashboardController extends Controller
             return redirect('/family/setup');
         }
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Family/Dashboard', [
             'family' => [
                 'name' => $family->name,
                 'invite_code' => $family->invite_code,
