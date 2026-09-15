@@ -3,10 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FamilyRequest;
-use App\Http\Requests\test;
-use App\Models\Family;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -75,7 +72,7 @@ class FamilyController extends Controller
     public function removeMember(Request $request, User $member)
     {
         $removed = $this->familyService->removeMember($member, Auth::user());
-        
+
         if (!$removed) {
             abort(403, 'Unauthorized action.');
         }
