@@ -15,6 +15,5 @@ class RolesAndPermissionsSeeder extends Seeder
 
         Role::firstOrCreate(['name' => 'family-head', 'guard_name' => 'web']);
         Role::firstOrCreate(['name' => 'family-member', 'guard_name' => 'web']);
-
     }
 }
