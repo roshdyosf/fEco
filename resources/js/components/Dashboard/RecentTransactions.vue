@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { WalletCards } from "@lucide/vue";
-import { Link } from "@inertiajs/vue3";
-import { index as transactionsIndex } from "@/actions/App/Http/Controllers/TransactionController";
-import type { Transaction } from "./types";
+import { WalletCards } from '@lucide/vue';
+import { Link } from '@inertiajs/vue3';
+import { index as transactionsIndex } from '@/actions/App/Http/Controllers/TransactionController';
+import type { Transaction } from './types';
 
 type Props = {
     transactions: Transaction[];
@@ -12,14 +12,14 @@ type Props = {
 const props = defineProps<Props>();
 
 const formatDate = (date: string): string =>
-    new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(
+    new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(
         new Date(date),
     );
 
 const formatCurrency = (amount: number): string =>
-    new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
+    new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
     }).format(amount);
 </script>
 
@@ -74,7 +74,7 @@ const formatCurrency = (amount: number): string =>
                                 class="py-4 font-medium text-gray-900 dark:text-white"
                             >
                                 {{
-                                    transaction.description || "No description"
+                                    transaction.description || 'No description'
                                 }}
                             </td>
                             <td class="py-4">
@@ -82,7 +82,7 @@ const formatCurrency = (amount: number): string =>
                                     class="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300"
                                     >{{
                                         transaction.category?.name ??
-                                        "Uncategorized"
+                                        'Uncategorized'
                                     }}</span
                                 >
                             </td>
@@ -97,7 +97,7 @@ const formatCurrency = (amount: number): string =>
                                         : 'text-rose-600 dark:text-rose-400'
                                 "
                             >
-                                {{ transaction.type === "income" ? "+" : "-"
+                                {{ transaction.type === 'income' ? '+' : '-'
                                 }}{{ formatCurrency(transaction.amount) }}
                             </td>
                         </tr>

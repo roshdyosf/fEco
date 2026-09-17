@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ArrowLeft } from "@lucide/vue";
-import { Head, Link } from "@inertiajs/vue3";
-import { index as dashboardIndex } from "@/actions/App/Http/Controllers/DashboardController";
-import type { Transaction } from "@/components/Dashboard/types";
+import { ArrowLeft } from '@lucide/vue';
+import { Head, Link } from '@inertiajs/vue3';
+import { index as dashboardIndex } from '@/actions/App/Http/Controllers/DashboardController';
+import type { Transaction } from '@/components/Dashboard/types';
 
 type PaginationLink = {
     url: string | null;
@@ -27,14 +27,14 @@ type Props = {
 const props = defineProps<Props>();
 
 const formatDate = (date: string): string =>
-    new Intl.DateTimeFormat("en-US", {
-        dateStyle: "medium",
+    new Intl.DateTimeFormat('en-US', {
+        dateStyle: 'medium',
     }).format(new Date(date));
 
 const formatCurrency = (amount: number | string): string =>
-    new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
+    new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
     }).format(Number(amount));
 </script>
 
@@ -103,13 +103,13 @@ const formatCurrency = (amount: number | string): string =>
                                 >
                                     {{
                                         transaction.description ||
-                                        "No description"
+                                        'No description'
                                     }}
                                 </td>
                                 <td class="px-6 py-4">
                                     {{
                                         transaction.category?.name ??
-                                        "Uncategorized"
+                                        'Uncategorized'
                                     }}
                                 </td>
                                 <td class="px-6 py-4 text-xs text-gray-400">
@@ -124,9 +124,9 @@ const formatCurrency = (amount: number | string): string =>
                                     "
                                 >
                                     {{
-                                        transaction.type === "income"
-                                            ? "+"
-                                            : "-"
+                                        transaction.type === 'income'
+                                            ? '+'
+                                            : '-'
                                     }}{{ formatCurrency(transaction.amount) }}
                                 </td>
                             </tr>
