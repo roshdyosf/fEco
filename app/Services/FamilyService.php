@@ -4,18 +4,21 @@ namespace App\Services;
 
 use App\Models\Family;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class FamilyService
 {
-    function generateRandom()
+    public function generateRandom()
     {
         $num = Str::upper(Str::random(8));
         while (Family::where('invite_code', $num)->exists()) {
             $num = Str::upper(Str::random(8));
         }
+
         return $num;
     }
+
     public function createFamily(array $data, User $user): Family
     {
         $family = Family::create([
@@ -34,7 +37,7 @@ class FamilyService
     {
         $family = Family::where('invite_code', $inviteCode)->first();
 
-        if (!$family) {
+        if (! $family) {
             return false;
         }
 
@@ -47,7 +50,7 @@ class FamilyService
     public function regenerateCode(Family $family): void
     {
         $family->update([
-            'invite_code' => $this->generateRandom()
+            'invite_code' => $this->generateRandom(),
         ]);
     }
 
@@ -57,9 +60,31 @@ class FamilyService
             return false;
         }
 
-        $member->update(['family_id' => null]);
-        $member->removeRole('family-member');
+        DB::transaction(function () use ($member, $head): void {
+            $member->update(['family_id' => null]);
+            $member->removeRole('family-member');
+            $head->family->update(['invite_code' => $this->generateRandom()]);
+        });
 
         return true;
+    }
+
+    public function leaveFamily(User $user): void
+    {
+        DB::transaction(function () use ($user): void {
+            $user->update(['family_id' => null]);
+            $user->removeRole('family-member');
+        });
+    }
+
+    public function deleteFamily(User $head): void
+    {
+        DB::transaction(function () use ($head): void {
+            $family = $head->family;
+
+            $family?->delete();
+            $head->update(['family_id' => null]);
+            $head->removeRole('family-head');
+        });
     }
 }
