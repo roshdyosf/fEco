@@ -6,6 +6,7 @@ use App\Services\TransactionService;
 use App\Http\Requests\TransactionRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Transaction;
+use Illuminate\Http\RedirectResponse;
 
 
 class TransactionController extends Controller
@@ -26,7 +27,7 @@ class TransactionController extends Controller
     }
 
 
-    public function store(TransactionRequest $request)
+    public function store(TransactionRequest $request): RedirectResponse
     {
         try {
             $this->transactionService->createTransaction($request->validated(), Auth::user());
