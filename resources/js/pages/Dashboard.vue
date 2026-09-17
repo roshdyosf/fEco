@@ -1,173 +1,453 @@
-<script setup>
-import { Head, usePage, Link, useForm } from "@inertiajs/vue3";
-import { computed } from "vue";
+<script setup lang="ts">
+import { Head, Link, useForm } from "@inertiajs/vue3";
+import { computed, watch } from "vue";
+import { ArrowDownRight, ArrowUpRight, WalletCards } from "@lucide/vue";
+import AppLayout from "@/layouts/AppLayout.vue";
+import { store } from "@/actions/App/Http/Controllers/TransactionController";
 
-const props = defineProps({
-    family: Object,
-    monthly_income: Number,
-    monthly_expenses: Number,
-    recent_transactions: Array,
-});
-
-const page = usePage();
-const user = computed(() => page.props.auth.user);
-
-const copyInviteCode = () => {
-    navigator.clipboard.writeText(props.family.invite_code);
-    alert("Invite code copied to clipboard!");
+type Transaction = {
+    id: number;
+    title: string;
+    amount: number;
+    type: "income" | "expense";
+    category?: { name: string } | null;
+    created_at: string;
 };
 
-// Form for creating a new transaction
-const transactionForm = useForm({
-    type: 'expense',
-    amount: '',
-    description: '',
-    date: new Date().toISOString().split('T')[0], // Today's date by default
+type Category = {
+    id: number;
+    name: string;
+    type: "income" | "expense";
+};
+
+const props = defineProps<{
+    family: {
+        name: string;
+        total_balance: number;
+    };
+    categories: Category[];
+    monthly_income: number;
+    monthly_expenses: number;
+    recent_transactions: Transaction[];
+}>();
+
+const transactionForm = useForm<{
+    type: "expense" | "income";
+    category_id: number | null;
+    amount: number | null;
+    description: string;
+}>({
+    type: "expense",
+    category_id: null,
+    amount: null,
+    description: "",
 });
 
+const availableCategories = computed(() =>
+    props.categories.filter(
+        (category) => category.type === transactionForm.type,
+    ),
+);
+
+watch(
+    () => transactionForm.type,
+    () => {
+        transactionForm.category_id = null;
+    },
+);
+
 const submitTransaction = () => {
-    transactionForm.post('/transactions', {
+    transactionForm.post(store.url(), {
         preserveScroll: true,
-        onSuccess: () => transactionForm.reset('amount', 'description'),
+        onSuccess: () =>
+            transactionForm.reset("amount", "description", "category_id"),
     });
+};
+
+const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+    }).format(amount);
+};
+
+const formatDate = (date: string) => {
+    return new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+    }).format(new Date(date));
 };
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Dashboard | Family Eco" />
 
-    <div class="min-h-screen bg-gray-50">
-        <!-- Navigation Bar -->
-        <nav class="bg-white border-b border-gray-200">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center font-extrabold text-xl text-indigo-600">
-                            FamilyTracker
-                        </div>
-                        <div class="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                            <Link href="/dashboard" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Dashboard
-                            </Link>
-                            <Link href="/family/settings" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors">
-                                Family Settings
-                            </Link>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <span class="text-sm text-gray-500">{{ user?.name }}</span>
-                        <Link href="/logout" method="post" as="button" class="text-sm font-medium text-red-500 hover:text-red-700 transition-colors">
-                            Logout
-                        </Link>
-                    </div>
+    <AppLayout>
+        <div class="py-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <p
+                        class="text-sm font-medium text-emerald-600 dark:text-emerald-400"
+                    >
+                        {{ props.family.name }}
+                    </p>
+                    <h2
+                        class="mt-1 text-2xl font-semibold leading-tight text-stone-900 dark:text-stone-100"
+                    >
+                        Dashboard
+                    </h2>
+                    <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                        A quick view of your family's finances.
+                    </p>
                 </div>
-            </div>
-        </nav>
 
-        <!-- Main Content -->
-        <div class="py-12 px-4 sm:px-6 lg:px-8">
-            <div class="max-w-7xl mx-auto space-y-6">
-
-                <!-- Header Section -->
-                <div class="bg-white shadow rounded-lg p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900">{{ props.family.name }} Dashboard</h1>
-                        <p class="text-sm text-gray-600">Welcome back, {{ user?.name }}!</p>
+                <section
+                    class="mb-8 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-900 sm:p-8"
+                >
+                    <div class="mb-6">
+                        <h3
+                            class="text-lg font-semibold text-stone-900 dark:text-stone-100"
+                        >
+                            Add a transaction
+                        </h3>
+                        <p
+                            class="mt-1 text-sm text-stone-500 dark:text-stone-400"
+                        >
+                            Record money coming in or going out of the family
+                            balance.
+                        </p>
                     </div>
-                    <div class="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg border border-gray-200">
-                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Invite Code:</span>
-                        <span class="text-sm font-mono font-bold text-indigo-600 tracking-widest">{{ props.family.invite_code }}</span>
-                        <button @click="copyInviteCode" class="ml-2 text-gray-400 hover:text-gray-700 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                            </svg>
+
+                    <form
+                        class="grid gap-5 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-start"
+                        @submit.prevent="submitTransaction"
+                    >
+                        <div class="space-y-2">
+                            <label
+                                class="text-sm font-medium text-stone-700 dark:text-stone-200"
+                            >
+                                Transaction type
+                            </label>
+                            <div
+                                class="grid grid-cols-2 rounded-lg bg-stone-100 p-1 dark:bg-stone-800"
+                            >
+                                <button
+                                    type="button"
+                                    class="rounded-md px-3 py-2 text-sm font-medium transition"
+                                    :class="
+                                        transactionForm.type === 'expense'
+                                            ? 'bg-white text-rose-700 shadow-sm dark:bg-stone-700 dark:text-rose-300'
+                                            : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100'
+                                    "
+                                    @click="transactionForm.type = 'expense'"
+                                >
+                                    Expense
+                                </button>
+                                <button
+                                    type="button"
+                                    class="rounded-md px-3 py-2 text-sm font-medium transition"
+                                    :class="
+                                        transactionForm.type === 'income'
+                                            ? 'bg-white text-emerald-700 shadow-sm dark:bg-stone-700 dark:text-emerald-300'
+                                            : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100'
+                                    "
+                                    @click="transactionForm.type = 'income'"
+                                >
+                                    Income
+                                </button>
+                            </div>
+                            <p
+                                v-if="transactionForm.errors.type"
+                                class="text-xs text-rose-600"
+                            >
+                                {{ transactionForm.errors.type }}
+                            </p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label
+                                for="category"
+                                class="text-sm font-medium text-stone-700 dark:text-stone-200"
+                            >
+                                Category
+                            </label>
+                            <select
+                                id="category"
+                                v-model="transactionForm.category_id"
+                                class="h-10 w-full rounded-md border border-stone-300 bg-white px-3 text-sm text-stone-900 outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100"
+                                required
+                            >
+                                <option :value="null" disabled>
+                                    Select a category
+                                </option>
+                                <option
+                                    v-for="category in availableCategories"
+                                    :key="category.id"
+                                    :value="category.id"
+                                >
+                                    {{ category.name }}
+                                </option>
+                            </select>
+                            <p
+                                v-if="transactionForm.errors.category_id"
+                                class="text-xs text-rose-600"
+                            >
+                                {{ transactionForm.errors.category_id }}
+                            </p>
+                            <p
+                                v-if="availableCategories.length === 0"
+                                class="text-xs text-amber-600"
+                            >
+                                No {{ transactionForm.type }} categories are
+                                available yet.
+                            </p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label
+                                for="amount"
+                                class="text-sm font-medium text-stone-700 dark:text-stone-200"
+                            >
+                                Amount
+                            </label>
+                            <input
+                                id="amount"
+                                v-model.number="transactionForm.amount"
+                                type="number"
+                                min="0.01"
+                                step="0.01"
+                                placeholder="0.00"
+                                class="h-10 w-full rounded-md border border-stone-300 bg-white px-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100"
+                                required
+                            />
+                            <p
+                                v-if="transactionForm.errors.amount"
+                                class="text-xs text-rose-600"
+                            >
+                                {{ transactionForm.errors.amount }}
+                            </p>
+                        </div>
+
+                        <button
+                            type="submit"
+                            :disabled="
+                                transactionForm.processing ||
+                                availableCategories.length === 0
+                            "
+                            class="h-10 rounded-md bg-emerald-700 px-5 text-sm font-medium text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50 lg:mt-7 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                        >
+                            {{
+                                transactionForm.processing
+                                    ? "Saving..."
+                                    : "Save transaction"
+                            }}
                         </button>
+
+                        <div class="lg:col-span-4">
+                            <label
+                                for="description"
+                                class="text-sm font-medium text-stone-700 dark:text-stone-200"
+                            >
+                                Note
+                                <span class="font-normal text-stone-400"
+                                    >(optional)</span
+                                >
+                            </label>
+                            <input
+                                id="description"
+                                v-model="transactionForm.description"
+                                type="text"
+                                maxlength="500"
+                                placeholder="What was this for?"
+                                class="mt-2 h-10 w-full rounded-md border border-stone-300 bg-white px-3 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100"
+                            />
+                            <p
+                                v-if="transactionForm.errors.description"
+                                class="mt-1 text-xs text-rose-600"
+                            >
+                                {{ transactionForm.errors.description }}
+                            </p>
+                        </div>
+                    </form>
+                </section>
+
+                <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div
+                        class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-gray-800 dark:ring-white/10"
+                    >
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                                >Total Balance</span
+                            >
+                            <WalletCards
+                                class="h-5 w-5 text-emerald-600 dark:text-emerald-400"
+                            />
+                        </div>
+                        <p
+                            class="mt-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white"
+                        >
+                            {{ formatCurrency(props.family.total_balance) }}
+                        </p>
+                    </div>
+
+                    <div
+                        class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-gray-800 dark:ring-white/10"
+                    >
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                                >Monthly Income</span
+                            >
+                            <ArrowUpRight
+                                class="h-5 w-5 text-sky-600 dark:text-sky-400"
+                            />
+                        </div>
+                        <p
+                            class="mt-4 text-3xl font-extrabold tracking-tight text-blue-600 dark:text-blue-400"
+                        >
+                            +{{ formatCurrency(props.monthly_income) }}
+                        </p>
+                    </div>
+
+                    <div
+                        class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 dark:bg-gray-800 dark:ring-white/10"
+                    >
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                                >Monthly Expenses</span
+                            >
+                            <ArrowDownRight
+                                class="h-5 w-5 text-rose-600 dark:text-rose-400"
+                            />
+                        </div>
+                        <p
+                            class="mt-4 text-3xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400"
+                        >
+                            -{{ formatCurrency(props.monthly_expenses) }}
+                        </p>
                     </div>
                 </div>
 
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white shadow rounded-lg p-6 border-l-4 border-blue-500">
-                        <h3 class="text-sm font-medium text-gray-500">Total Family Balance</h3>
-                        <p class="mt-2 text-3xl font-bold text-gray-900">${{ props.family.total_balance }}</p>
-                    </div>
-                    <div class="bg-white shadow rounded-lg p-6 border-l-4 border-red-500">
-                        <h3 class="text-sm font-medium text-gray-500">Monthly Expenses</h3>
-                        <p class="mt-2 text-3xl font-bold text-red-600">${{ props.monthly_expenses }}</p>
-                    </div>
-                    <div class="bg-white shadow rounded-lg p-6 border-l-4 border-green-500">
-                        <h3 class="text-sm font-medium text-gray-500">Monthly Income</h3>
-                        <p class="mt-2 text-3xl font-bold text-green-600">${{ props.monthly_income }}</p>
-                    </div>
-                </div>
-
-                <!-- Two-Column Layout for Form and List -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                    <!-- Add Transaction Form -->
-                    <div class="bg-white shadow rounded-lg p-6 lg:col-span-1 h-fit">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Add Transaction</h3>
-                        <form @submit.prevent="submitTransaction" class="space-y-4">
+                <div
+                    class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-900/5 dark:bg-gray-800 dark:ring-white/10"
+                >
+                    <div class="p-6 sm:p-8">
+                        <div
+                            class="mb-6 flex items-center justify-between gap-4"
+                        >
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Type</label>
-                                <select v-model="transactionForm.type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    <option value="expense">Expense</option>
-                                    <option value="income">Income</option>
-                                </select>
+                                <h3
+                                    class="text-lg font-semibold text-stone-900 dark:text-white"
+                                >
+                                    Recent transactions
+                                </h3>
+                                <p
+                                    class="text-xs text-gray-500 dark:text-gray-400"
+                                >
+                                    Your latest household activity.
+                                </p>
                             </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Amount ($)</label>
-                                <input type="number" step="0.01" min="0.01" v-model="transactionForm.amount" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Description</label>
-                                <input type="text" v-model="transactionForm.description" required placeholder="e.g. Groceries" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Date</label>
-                                <input type="date" v-model="transactionForm.date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                            </div>
-
-                            <button type="submit" :disabled="transactionForm.processing" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
-                                {{ transactionForm.processing ? 'Adding...' : 'Add Transaction' }}
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Transactions List -->
-                    <div class="bg-white shadow rounded-lg p-6 lg:col-span-2">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Transactions</h3>
-
-                        <div v-if="props.recent_transactions.length === 0" class="text-center py-8">
-                            <p class="text-sm text-gray-500">No transactions recorded yet. Start managing your expenses!</p>
+                            <Link
+                                href="/transactions"
+                                class="text-sm font-medium text-emerald-700 transition hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                            >
+                                View all
+                            </Link>
                         </div>
 
-                        <ul v-else class="divide-y divide-gray-200">
-                            <li v-for="transaction in props.recent_transactions" :key="transaction.id" class="py-4 flex justify-between items-center">
-                                <div class="flex items-center gap-4">
-                                    <div :class="transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100'" class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center">
-                                        <svg v-if="transaction.type === 'income'" class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                                        <svg v-else class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900">{{ transaction.description }}</p>
-                                        <p class="text-xs text-gray-500">{{ transaction.date }} • Added by {{ transaction.user?.name }}</p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <span :class="transaction.type === 'income' ? 'text-green-600' : 'text-red-600'" class="text-sm font-bold">
-                                        {{ transaction.type === 'income' ? '+' : '-' }}${{ transaction.amount }}
-                                    </span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                        <div
+                            v-if="props.recent_transactions.length > 0"
+                            class="overflow-x-auto"
+                        >
+                            <table
+                                class="w-full text-left text-sm text-gray-600 dark:text-gray-300"
+                            >
+                                <thead
+                                    class="border-b border-gray-100 text-xs uppercase tracking-wider text-gray-400 dark:border-gray-700 dark:text-gray-500"
+                                >
+                                    <tr>
+                                        <th class="pb-3 font-semibold">
+                                            Title
+                                        </th>
+                                        <th class="pb-3 font-semibold">
+                                            Category
+                                        </th>
+                                        <th class="pb-3 font-semibold">Date</th>
+                                        <th
+                                            class="pb-3 font-semibold text-right"
+                                        >
+                                            Amount
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody
+                                    class="divide-y divide-gray-100 dark:divide-gray-700/60"
+                                >
+                                    <tr
+                                        v-for="tx in props.recent_transactions"
+                                        :key="tx.id"
+                                        class="hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition"
+                                    >
+                                        <td
+                                            class="py-4 font-medium text-gray-900 dark:text-white"
+                                        >
+                                            {{ tx.title }}
+                                        </td>
+                                        <td class="py-4">
+                                            <span
+                                                class="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                                            >
+                                                {{
+                                                    tx.category?.name ??
+                                                    "Uncategorized"
+                                                }}
+                                            </span>
+                                        </td>
+                                        <td class="py-4 text-xs text-gray-400">
+                                            {{ formatDate(tx.created_at) }}
+                                        </td>
+                                        <td
+                                            class="py-4 text-right font-bold"
+                                            :class="
+                                                tx.type === 'income'
+                                                    ? 'text-emerald-600 dark:text-emerald-400'
+                                                    : 'text-rose-600 dark:text-rose-400'
+                                            "
+                                        >
+                                            {{ tx.type === "income" ? "+" : "-"
+                                            }}{{ formatCurrency(tx.amount) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
+                        <div
+                            v-else
+                            class="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 py-12 px-4 text-center dark:border-gray-700"
+                        >
+                            <div
+                                class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 mb-3"
+                            >
+                                <WalletCards class="h-5 w-5" />
+                            </div>
+                            <h4
+                                class="text-sm font-semibold text-gray-900 dark:text-white"
+                            >
+                                No transactions recorded yet
+                            </h4>
+                            <p
+                                class="mt-1 text-xs text-gray-500 dark:text-gray-400 max-w-sm"
+                            >
+                                Start keeping your family budget green and
+                                structured by adding your first transaction.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </AppLayout>
 </template>
