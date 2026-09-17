@@ -12,23 +12,22 @@ export type UseTwoFactorAuthReturn = {
     clearSetupData: () => void;
     clearErrors: () => void;
     clearTwoFactorAuthData: () => void;
+    clearRecoveryCodes: () => void;
     fetchQrCode: () => Promise<void>;
     fetchSetupKey: () => Promise<void>;
     fetchSetupData: () => Promise<void>;
     fetchRecoveryCodes: () => Promise<void>;
 };
 
-const errors = ref<string[]>([]);
-const manualSetupKey = ref<string | null>(null);
-const qrCodeSvg = ref<string | null>(null);
-const recoveryCodesList = ref<string[]>([]);
-
-const hasSetupData = computed<boolean>(
-    () => qrCodeSvg.value !== null && manualSetupKey.value !== null,
-);
-
 export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     const http = useHttp();
+    const errors = ref<string[]>([]);
+    const manualSetupKey = ref<string | null>(null);
+    const qrCodeSvg = ref<string | null>(null);
+    const recoveryCodesList = ref<string[]>([]);
+    const hasSetupData = computed<boolean>(
+        () => qrCodeSvg.value !== null && manualSetupKey.value !== null,
+    );
 
     const fetchQrCode = async (): Promise<void> => {
         try {
@@ -69,7 +68,10 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
 
     const clearTwoFactorAuthData = (): void => {
         clearSetupData();
-        clearErrors();
+        clearRecoveryCodes();
+    };
+
+    const clearRecoveryCodes = (): void => {
         recoveryCodesList.value = [];
     };
 
@@ -104,6 +106,7 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
         clearSetupData,
         clearErrors,
         clearTwoFactorAuthData,
+        clearRecoveryCodes,
         fetchQrCode,
         fetchSetupKey,
         fetchSetupData,
