@@ -104,6 +104,7 @@ test('a family member can leave their family', function () {
 });
 
 test('a family head can delete the family', function () {
+    familyMemberRole();
     $family = Family::factory()->create();
     $user = User::factory()->create(['family_id' => $family->id]);
     $user->assignRole(familyHeadRole());
