@@ -2,7 +2,7 @@ export type Transaction = {
     id: number;
     title: string;
     amount: number;
-    type: "income" | "expense";
+    type: 'income' | 'expense';
     category?: { name: string } | null;
     created_at: string;
 };
@@ -10,7 +10,7 @@ export type Transaction = {
 export type Category = {
     id: number;
     name: string;
-    type: "income" | "expense";
+    type: 'income' | 'expense';
 };
 
 export type FamilyMember = {

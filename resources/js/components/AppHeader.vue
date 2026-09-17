@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { usePage } from "@inertiajs/vue3";
-import { computed } from "vue";
-import Breadcrumbs from "@/components/Breadcrumbs.vue";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import UserMenuContent from "@/components/UserMenuContent.vue";
-import { getInitials } from "@/composables/useInitials";
-import type { BreadcrumbItem } from "@/types";
+} from '@/components/ui/dropdown-menu';
+import UserMenuContent from '@/components/UserMenuContent.vue';
+import { getInitials } from '@/composables/useInitials';
+import type { BreadcrumbItem } from '@/types';
 
 type Props = {
     breadcrumbs?: BreadcrumbItem[];

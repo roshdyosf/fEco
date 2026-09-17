@@ -1,6 +1,6 @@
 <script setup>
-import { Head, useForm, usePage } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 const props = defineProps({
     family: Object,
@@ -16,10 +16,10 @@ const removeForm = useForm({});
 const regenerateCode = () => {
     if (
         confirm(
-            "Are you sure you want to generate a new invite code? The old one will no longer work.",
+            'Are you sure you want to generate a new invite code? The old one will no longer work.',
         )
     ) {
-        regenerateForm.post("/family/regenerate-code", {
+        regenerateForm.post('/family/regenerate-code', {
             preserveScroll: true,
         });
     }
@@ -41,8 +41,8 @@ const removeMember = (member) => {
 <template>
     <Head title="Family Settings" />
 
-    <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto space-y-8">
+    <div class="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-4xl space-y-8">
             <!-- Header -->
             <div>
                 <h1 class="text-3xl font-extrabold text-gray-900">
@@ -55,16 +55,16 @@ const removeMember = (member) => {
 
             <!-- Family Details & Invite Code -->
             <div
-                class="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200"
+                class="overflow-hidden border border-gray-200 bg-white shadow sm:rounded-lg"
             >
                 <div
-                    class="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gray-50 flex justify-between items-center"
+                    class="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-5 sm:px-6"
                 >
                     <h3 class="text-lg leading-6 font-medium text-gray-900">
                         Family Information
                     </h3>
                 </div>
-                <div class="px-4 py-5 sm:p-6 space-y-4">
+                <div class="space-y-4 px-4 py-5 sm:p-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700"
                             >Family Name</label
@@ -80,19 +80,19 @@ const removeMember = (member) => {
                         >
                         <div class="mt-1 flex items-center gap-4">
                             <span
-                                class="px-4 py-2 bg-indigo-50 text-indigo-700 font-mono font-bold rounded border border-indigo-200 tracking-widest"
+                                class="rounded border border-indigo-200 bg-indigo-50 px-4 py-2 font-mono font-bold tracking-widest text-indigo-700"
                             >
                                 {{ family.invite_code }}
                             </span>
                             <button
                                 @click="regenerateCode"
                                 :disabled="regenerateForm.processing"
-                                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                                class="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-4 font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
                             >
                                 {{
                                     regenerateForm.processing
-                                        ? "Generating..."
-                                        : "Regenerate Code"
+                                        ? 'Generating...'
+                                        : 'Regenerate Code'
                                 }}
                             </button>
                         </div>
@@ -106,10 +106,10 @@ const removeMember = (member) => {
 
             <!-- Members List -->
             <div
-                class="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200"
+                class="overflow-hidden border border-gray-200 bg-white shadow sm:rounded-lg"
             >
                 <div
-                    class="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gray-50"
+                    class="border-b border-gray-200 bg-gray-50 px-4 py-5 sm:px-6"
                 >
                     <h3 class="text-lg leading-6 font-medium text-gray-900">
                         Family Members
@@ -119,14 +119,14 @@ const removeMember = (member) => {
                     <li
                         v-for="member in members"
                         :key="member.id"
-                        class="px-4 py-4 sm:px-6 flex items-center justify-between hover:bg-gray-50"
+                        class="flex items-center justify-between px-4 py-4 hover:bg-gray-50 sm:px-6"
                     >
                         <div class="flex items-center gap-4">
                             <div
-                                class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center"
+                                class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100"
                             >
                                 <span
-                                    class="text-indigo-700 font-bold text-sm"
+                                    class="text-sm font-bold text-indigo-700"
                                     >{{
                                         member.name.charAt(0).toUpperCase()
                                     }}</span
@@ -137,7 +137,7 @@ const removeMember = (member) => {
                                     {{ member.name }}
                                     <span
                                         v-if="member.id === currentUser.id"
-                                        class="text-xs text-gray-500 font-normal"
+                                        class="text-xs font-normal text-gray-500"
                                         >(You)</span
                                     >
                                 </p>
@@ -151,14 +151,14 @@ const removeMember = (member) => {
                             <button
                                 @click="removeMember(member)"
                                 :disabled="removeForm.processing"
-                                class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                                class="inline-flex items-center rounded border border-transparent bg-red-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
                             >
                                 Remove
                             </button>
                         </div>
                         <div v-else>
                             <span
-                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"
                             >
                                 Family Head
                             </span>

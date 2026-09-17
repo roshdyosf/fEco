@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Head, Link } from "@inertiajs/vue3";
-import { ArrowRight, LogOut, PiggyBank, ShieldCheck, Users } from "@lucide/vue";
-import { dashboard, login, logout, register } from "@/routes";
+import { Head, Link } from '@inertiajs/vue3';
+import { ArrowRight, LogOut, PiggyBank, ShieldCheck, Users } from '@lucide/vue';
+import { dashboard, login, logout, register } from '@/routes';
 </script>
 
 <template>
@@ -10,12 +10,18 @@ import { dashboard, login, logout, register } from "@/routes";
     <div
         class="min-h-screen bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100"
     >
-        <header class="border-b border-stone-200/80 bg-stone-50/90 dark:border-stone-800 dark:bg-stone-950/90">
-            <nav class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 lg:px-8">
+        <header
+            class="border-b border-stone-200/80 bg-stone-50/90 dark:border-stone-800 dark:bg-stone-950/90"
+        >
+            <nav
+                class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 lg:px-8"
+            >
                 <div
                     class="flex items-center gap-2 text-sm font-semibold tracking-wide text-stone-900 dark:text-stone-100"
                 >
-                    <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-700 text-white">
+                    <span
+                        class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-700 text-white"
+                    >
                         <PiggyBank class="h-5 w-5" />
                     </span>
                     Family Eco
@@ -56,13 +62,13 @@ import { dashboard, login, logout, register } from "@/routes";
             </nav>
         </header>
 
-        <div class="mx-auto flex w-full max-w-6xl items-center px-5 py-12 lg:min-h-[calc(100vh-82px)] lg:px-8 lg:py-16">
+        <div
+            class="mx-auto flex w-full max-w-6xl items-center px-5 py-12 lg:min-h-[calc(100vh-82px)] lg:px-8 lg:py-16"
+        >
             <main
                 class="grid w-full overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-[0_20px_60px_-35px_rgba(28,25,23,0.35)] lg:grid-cols-[1.1fr_0.9fr] dark:border-stone-800 dark:bg-stone-900"
             >
-                <div
-                    class="flex flex-col justify-center p-7 sm:p-10 lg:p-16"
-                >
+                <div class="flex flex-col justify-center p-7 sm:p-10 lg:p-16">
                     <span
                         class="mb-5 inline-flex w-fit items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
                     >
@@ -77,8 +83,8 @@ import { dashboard, login, logout, register } from "@/routes";
                     <p
                         class="mt-5 max-w-lg text-base leading-7 text-stone-600 dark:text-stone-300"
                     >
-                        Keep income, expenses, and everyday decisions together in
-                        one calm space built for the people who share them.
+                        Keep income, expenses, and everyday decisions together
+                        in one calm space built for the people who share them.
                     </p>
 
                     <div class="mt-8 flex flex-wrap gap-3">
@@ -113,22 +119,38 @@ import { dashboard, login, logout, register } from "@/routes";
                     class="relative flex min-h-[280px] flex-col justify-between bg-emerald-800 p-8 text-white sm:p-10 lg:min-h-full"
                 >
                     <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-emerald-100">Family Eco</span>
+                        <span class="text-sm font-medium text-emerald-100"
+                            >Family Eco</span
+                        >
                         <ShieldCheck class="h-5 w-5 text-emerald-200" />
                     </div>
                     <div class="space-y-6">
                         <div>
-                            <p class="text-sm text-emerald-100">Your household snapshot</p>
-                            <p class="mt-2 text-3xl font-semibold tracking-tight">Simple, shared, visible.</p>
+                            <p class="text-sm text-emerald-100">
+                                Your household snapshot
+                            </p>
+                            <p
+                                class="mt-2 text-3xl font-semibold tracking-tight"
+                            >
+                                Simple, shared, visible.
+                            </p>
                         </div>
                         <div class="grid gap-3 sm:grid-cols-2">
-                            <div class="rounded-lg border border-white/15 bg-white/10 p-4">
+                            <div
+                                class="rounded-lg border border-white/15 bg-white/10 p-4"
+                            >
                                 <Users class="h-5 w-5 text-emerald-200" />
-                                <p class="mt-5 text-sm font-medium">One family view</p>
+                                <p class="mt-5 text-sm font-medium">
+                                    One family view
+                                </p>
                             </div>
-                            <div class="rounded-lg border border-white/15 bg-white/10 p-4">
+                            <div
+                                class="rounded-lg border border-white/15 bg-white/10 p-4"
+                            >
                                 <PiggyBank class="h-5 w-5 text-emerald-200" />
-                                <p class="mt-5 text-sm font-medium">Everyday clarity</p>
+                                <p class="mt-5 text-sm font-medium">
+                                    Everyday clarity
+                                </p>
                             </div>
                         </div>
                     </div>

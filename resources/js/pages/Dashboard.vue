@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { Head } from "@inertiajs/vue3";
-import { ref } from "vue";
-import CategoryManager from "@/components/Dashboard/CategoryManager.vue";
-import FamilyHeader from "@/components/Dashboard/FamilyHeader.vue";
-import FamilySettings from "@/components/Dashboard/FamilySettings.vue";
-import RecentTransactions from "@/components/Dashboard/RecentTransactions.vue";
-import StatsOverview from "@/components/Dashboard/StatsOverview.vue";
-import TransactionForm from "@/components/Dashboard/TransactionForm.vue";
-import type { Category, Family, FamilyMember, Transaction } from "@/components/Dashboard/types";
+import { Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import CategoryManager from '@/components/Dashboard/CategoryManager.vue';
+import FamilyHeader from '@/components/Dashboard/FamilyHeader.vue';
+import FamilySettings from '@/components/Dashboard/FamilySettings.vue';
+import RecentTransactions from '@/components/Dashboard/RecentTransactions.vue';
+import StatsOverview from '@/components/Dashboard/StatsOverview.vue';
+import TransactionForm from '@/components/Dashboard/TransactionForm.vue';
+import type {
+    Category,
+    Family,
+    FamilyMember,
+    Transaction,
+} from '@/components/Dashboard/types';
 
 type Props = {
     family: Family;

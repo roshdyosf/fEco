@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Link } from "@inertiajs/vue3";
-import { Check, Copy, Home, LogOut, Settings } from "@lucide/vue";
-import { ref } from "vue";
-import { home, logout } from "@/routes";
-import type { Family } from "./types";
+import { Link } from '@inertiajs/vue3';
+import { Check, Copy, Home, LogOut, Settings } from '@lucide/vue';
+import { ref } from 'vue';
+import { home, logout } from '@/routes';
+import type { Family } from './types';
 
 type Props = {
     family: Family;
@@ -11,7 +11,7 @@ type Props = {
 };
 
 const emit = defineEmits<{
-    (event: "toggle-settings"): void;
+    (event: 'toggle-settings'): void;
 }>();
 
 const props = defineProps<Props>();
@@ -28,31 +28,48 @@ const copyInviteCode = async (): Promise<void> => {
 </script>
 
 <template>
-    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div
+        class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+    >
         <div>
-            <p class="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+            <p
+                class="text-sm font-medium text-emerald-600 dark:text-emerald-400"
+            >
                 {{ family.name }}
             </p>
-            <h2 class="mt-1 text-2xl font-semibold leading-tight text-stone-900 dark:text-stone-100">
+            <h2
+                class="mt-1 text-2xl leading-tight font-semibold text-stone-900 dark:text-stone-100"
+            >
                 Dashboard
             </h2>
             <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
                 A quick view of your family's finances.
             </p>
-            <div class="mt-3 flex items-center gap-2 text-sm text-stone-600 dark:text-stone-300">
+            <div
+                class="mt-3 flex items-center gap-2 text-sm text-stone-600 dark:text-stone-300"
+            >
                 Invite code:
-                <span class="ml-1 font-mono font-semibold tracking-wider text-emerald-700 dark:text-emerald-300">
+                <span
+                    class="ml-1 font-mono font-semibold tracking-wider text-emerald-700 dark:text-emerald-300"
+                >
                     {{ family.invite_code }}
                 </span>
                 <button
                     type="button"
                     class="inline-flex h-7 items-center gap-1.5 rounded-md border border-stone-300 px-2 text-xs font-medium text-stone-600 transition hover:bg-stone-100 hover:text-stone-900 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white"
-                    :aria-label="inviteCodeCopied ? 'Invite code copied' : 'Copy invite code'"
+                    :aria-label="
+                        inviteCodeCopied
+                            ? 'Invite code copied'
+                            : 'Copy invite code'
+                    "
                     @click="copyInviteCode"
                 >
-                    <Check v-if="inviteCodeCopied" class="h-3.5 w-3.5 text-emerald-600" />
+                    <Check
+                        v-if="inviteCodeCopied"
+                        class="h-3.5 w-3.5 text-emerald-600"
+                    />
                     <Copy v-else class="h-3.5 w-3.5" />
-                    {{ inviteCodeCopied ? "Copied" : "Copy" }}
+                    {{ inviteCodeCopied ? 'Copied' : 'Copy' }}
                 </button>
             </div>
         </div>

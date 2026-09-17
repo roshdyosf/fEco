@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useForm } from "@inertiajs/vue3";
-import { Trash2, UserMinus, UserRound } from "@lucide/vue";
+import { useForm } from '@inertiajs/vue3';
+import { Trash2, UserMinus, UserRound } from '@lucide/vue';
 import {
     destroy as destroyFamily,
     leave as leaveFamilyRoute,
     removeMember as removeFamilyMember,
-} from "@/actions/App/Http/Controllers/FamilyController";
-import type { FamilyMember } from "./types";
+} from '@/actions/App/Http/Controllers/FamilyController';
+import type { FamilyMember } from './types';
 
 type Props = {
     isFamilyHead: boolean;
@@ -19,7 +19,7 @@ const familyActionForm = useForm({});
 const memberDeleteForm = useForm({});
 
 const leaveFamily = (): void => {
-    if (!window.confirm("Are you sure you want to leave this family?")) {
+    if (!window.confirm('Are you sure you want to leave this family?')) {
         return;
     }
 
@@ -27,7 +27,11 @@ const leaveFamily = (): void => {
 };
 
 const deleteFamily = (): void => {
-    if (!window.confirm("Delete this family permanently? All members, categories, and transactions will be removed.")) {
+    if (
+        !window.confirm(
+            'Delete this family permanently? All members, categories, and transactions will be removed.',
+        )
+    ) {
         return;
     }
 
@@ -46,14 +50,26 @@ const removeMember = (member: FamilyMember): void => {
 </script>
 
 <template>
-    <section class="mb-8 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-800 dark:bg-stone-900 sm:p-6">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <section
+        class="mb-8 rounded-2xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6 dark:border-stone-800 dark:bg-stone-900"
+    >
+        <div
+            class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+        >
             <div>
                 <h3 class="font-semibold text-stone-900 dark:text-stone-100">
-                    {{ isFamilyHead ? "Family administration" : "Your family membership" }}
+                    {{
+                        isFamilyHead
+                            ? 'Family administration'
+                            : 'Your family membership'
+                    }}
                 </h3>
                 <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                    {{ isFamilyHead ? "Deleting the family permanently removes its shared data." : "Leaving removes you from this family and returns you to setup." }}
+                    {{
+                        isFamilyHead
+                            ? 'Deleting the family permanently removes its shared data.'
+                            : 'Leaving removes you from this family and returns you to setup.'
+                    }}
                 </p>
             </div>
             <button
@@ -80,25 +96,47 @@ const removeMember = (member: FamilyMember): void => {
 
         <div class="mt-6 border-t border-stone-200 pt-5 dark:border-stone-800">
             <div class="mb-3 flex items-center justify-between gap-3">
-                <h4 class="text-sm font-semibold text-stone-900 dark:text-stone-100">
+                <h4
+                    class="text-sm font-semibold text-stone-900 dark:text-stone-100"
+                >
                     Family members
                 </h4>
                 <span class="text-xs text-stone-500 dark:text-stone-400">
-                    {{ members.length }} member{{ members.length === 1 ? "" : "s" }}
+                    {{ members.length }} member{{
+                        members.length === 1 ? '' : 's'
+                    }}
                 </span>
             </div>
-            <div class="divide-y divide-stone-200 rounded-lg border border-stone-200 dark:divide-stone-800 dark:border-stone-800">
-                <div v-for="member in members" :key="member.id" class="flex items-center justify-between gap-3 px-3 py-3">
+            <div
+                class="divide-y divide-stone-200 rounded-lg border border-stone-200 dark:divide-stone-800 dark:border-stone-800"
+            >
+                <div
+                    v-for="member in members"
+                    :key="member.id"
+                    class="flex items-center justify-between gap-3 px-3 py-3"
+                >
                     <div class="flex min-w-0 items-center gap-3">
-                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300">
+                        <div
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300"
+                        >
                             <UserRound class="h-4 w-4" />
                         </div>
                         <div class="min-w-0">
-                            <p class="truncate text-sm font-medium text-stone-900 dark:text-stone-100">
+                            <p
+                                class="truncate text-sm font-medium text-stone-900 dark:text-stone-100"
+                            >
                                 {{ member.name }}
-                                <span v-if="member.id === currentUserId" class="ml-1 text-xs font-normal text-stone-400">(You)</span>
+                                <span
+                                    v-if="member.id === currentUserId"
+                                    class="ml-1 text-xs font-normal text-stone-400"
+                                    >(You)</span
+                                >
                             </p>
-                            <p class="truncate text-xs text-stone-500 dark:text-stone-400">{{ member.email }}</p>
+                            <p
+                                class="truncate text-xs text-stone-500 dark:text-stone-400"
+                            >
+                                {{ member.email }}
+                            </p>
                         </div>
                     </div>
                     <button

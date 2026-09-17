@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { Head, useForm } from "@inertiajs/vue3";
-import { Clipboard, Check, Plus, Users } from "@lucide/vue";
-import { ref } from "vue";
-import InputError from "@/components/InputError.vue";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Head, useForm } from '@inertiajs/vue3';
+import { Clipboard, Check, Plus, Users } from '@lucide/vue';
+import { ref } from 'vue';
+import InputError from '@/components/InputError.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     join as joinFamily,
     store as createFamily,
-} from "@/actions/App/Http/Controllers/FamilyController";
+} from '@/actions/App/Http/Controllers/FamilyController';
 
-const createForm = useForm({ name: "" });
-const joinForm = useForm({ invite_code: "" });
+const createForm = useForm({ name: '' });
+const joinForm = useForm({ invite_code: '' });
 const pasted = ref(false);
 
 const submitCreate = () => {
@@ -24,7 +24,7 @@ const submitJoin = () => {
 };
 
 const pasteInviteCode = async () => {
-    let code = "";
+    let code = '';
 
     try {
         code = await navigator.clipboard.readText();
@@ -48,7 +48,7 @@ const pasteInviteCode = async () => {
     <Head title="Family Setup" />
 
     <div
-        class="min-h-screen bg-stone-50 px-5 py-12 text-stone-900 dark:bg-stone-950 dark:text-stone-100 sm:px-8 lg:py-20"
+        class="min-h-screen bg-stone-50 px-5 py-12 text-stone-900 sm:px-8 lg:py-20 dark:bg-stone-950 dark:text-stone-100"
     >
         <div class="mx-auto max-w-5xl">
             <div class="mb-10 max-w-xl">
@@ -77,12 +77,12 @@ const pasteInviteCode = async () => {
 
             <div class="grid gap-5 lg:grid-cols-2">
                 <section
-                    class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-900 sm:p-8"
+                    class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8 dark:border-stone-800 dark:bg-stone-900"
                 >
                     <div class="mb-8 flex items-start justify-between gap-4">
                         <div>
                             <p
-                                class="text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400"
+                                class="text-xs font-semibold tracking-wider text-emerald-700 uppercase dark:text-emerald-400"
                             >
                                 Start fresh
                             </p>
@@ -121,20 +121,20 @@ const pasteInviteCode = async () => {
                         >
                             {{
                                 createForm.processing
-                                    ? "Creating..."
-                                    : "Create family"
+                                    ? 'Creating...'
+                                    : 'Create family'
                             }}
                         </Button>
                     </form>
                 </section>
 
                 <section
-                    class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-900 sm:p-8"
+                    class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8 dark:border-stone-800 dark:bg-stone-900"
                 >
                     <div class="mb-8 flex items-start justify-between gap-4">
                         <div>
                             <p
-                                class="text-xs font-semibold uppercase tracking-wider text-sky-700 dark:text-sky-400"
+                                class="text-xs font-semibold tracking-wider text-sky-700 uppercase dark:text-sky-400"
                             >
                                 Have an invite?
                             </p>
@@ -158,7 +158,7 @@ const pasteInviteCode = async () => {
                                 type="text"
                                 required
                                 placeholder="e.g. ABCD1234"
-                                class="mt-2 font-mono uppercase tracking-wider"
+                                class="mt-2 font-mono tracking-wider uppercase"
                             />
                             <InputError
                                 :message="joinForm.errors.invite_code"
@@ -173,8 +173,8 @@ const pasteInviteCode = async () => {
                             >
                                 {{
                                     joinForm.processing
-                                        ? "Joining..."
-                                        : "Join family"
+                                        ? 'Joining...'
+                                        : 'Join family'
                                 }}
                             </Button>
                             <Button
@@ -188,7 +188,7 @@ const pasteInviteCode = async () => {
                                     class="h-4 w-4 text-emerald-600"
                                 />
                                 <Clipboard v-else class="h-4 w-4" />
-                                {{ pasted ? "Pasted" : "Paste code" }}
+                                {{ pasted ? 'Pasted' : 'Paste code' }}
                             </Button>
                         </div>
                     </form>

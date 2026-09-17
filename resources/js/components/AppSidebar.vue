@@ -23,7 +23,6 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
 ];
-
 </script>
 
 <template>

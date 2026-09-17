@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { Form, Head } from "@inertiajs/vue3";
-import InputError from "@/components/InputError.vue";
-import PasswordInput from "@/components/PasswordInput.vue";
-import TextLink from "@/components/TextLink.vue";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
-import { register } from "@/routes";
-import { store } from "@/routes/login";
-import { request } from "@/routes/password";
-import PasskeyVerify from "@/components/PasskeyVerify.vue";
+import { Form, Head } from '@inertiajs/vue3';
+import InputError from '@/components/InputError.vue';
+import PasswordInput from '@/components/PasswordInput.vue';
+import TextLink from '@/components/TextLink.vue';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { register } from '@/routes';
+import { store } from '@/routes/login';
+import { request } from '@/routes/password';
+import PasskeyVerify from '@/components/PasskeyVerify.vue';
 
 defineOptions({
     layout: {
-        title: "Log in to your account",
-        description: "Enter your email and password below to log in",
+        title: 'Log in to your account',
+        description: 'Enter your email and password below to log in',
     },
 });
 
@@ -42,9 +42,9 @@ defineProps<{
         <!-- Google Login Button -->
         <a
             href="/auth/google"
-            class="w-full flex items-center justify-center gap-3 py-2 px-4 border border-input rounded-md shadow-sm text-sm font-medium text-foreground bg-background hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition-colors"
+            class="border-input text-foreground bg-background hover:bg-accent hover:text-accent-foreground focus:ring-ring flex w-full items-center justify-center gap-3 rounded-md border px-4 py-2 text-sm font-medium shadow-sm transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
         >
-            <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <svg class="h-5 w-5" viewBox="0 0 24 24">
                 <path
                     fill="#4285F4"
                     d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
@@ -65,13 +65,13 @@ defineProps<{
             Continue with Google
         </a>
 
-        <div class="relative flex py-1 items-center">
-            <div class="flex-grow border-t border-border"></div>
+        <div class="relative flex items-center py-1">
+            <div class="border-border flex-grow border-t"></div>
             <span
-                class="flex-shrink mx-4 text-muted-foreground text-xs uppercase"
+                class="text-muted-foreground mx-4 flex-shrink text-xs uppercase"
                 >Or with email</span
             >
-            <div class="flex-grow border-t border-border"></div>
+            <div class="border-border flex-grow border-t"></div>
         </div>
 
         <Form
