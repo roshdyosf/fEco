@@ -46,18 +46,18 @@ class DashboardService
             ],
             'is_family_head' => $user->hasRole('family-head'),
             'current_user_id' => $user->id,
-            'members' => $family->users->map(fn ($member) => [
+            'members' => $family->users->map(fn($member) => [
                 'id' => $member->id,
                 'name' => $member->name,
                 'email' => $member->email,
             ])->values(),
-            'categories' => $family->categories->map(fn ($category) => [
+            'categories' => $family->categories->map(fn($category) => [
                 'id' => $category->id,
                 'name' => $category->name,
                 'type' => $category->type,
             ])->values(),
-            'monthly_income' => $monthlyIncome,
-            'monthly_expenses' => $monthlyExpenses,
+            'monthly_income' => (float) $monthlyIncome,
+            'monthly_expenses' => (float) $monthlyExpenses,
             'recent_transactions' => $recentTransactions,
         ];
     }

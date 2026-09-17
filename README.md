@@ -16,6 +16,12 @@ server-side domain operations. Inertia transports server responses to Vue pages
 without requiring a separate API layer. Vite Plus builds the TypeScript and Vue
 assets and Laravel Wayfinder generates typed frontend route helpers.
 
+## Live demo
+
+Try the project live here:
+
+- https://feco-production-bbd5.up.railway.app/
+
 ## Features
 
 - Email/password registration, login, logout, email verification, and password reset
