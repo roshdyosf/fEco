@@ -2,7 +2,6 @@
 
 use App\Models\Family;
 use App\Models\User;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 function familyHeadRole(): Role
@@ -108,8 +107,6 @@ test('a family head can delete the family', function () {
     $family = Family::factory()->create();
     $user = User::factory()->create(['family_id' => $family->id]);
     $user->assignRole(familyHeadRole());
-    Permission::findOrCreate('view-all-transactions', 'web');
-    $user->givePermissionTo('view-all-transactions');
 
     $this->actingAs($user)
         ->delete(route('family.destroy'))
@@ -124,8 +121,7 @@ test('a family head can remove another member', function () {
     $family = Family::factory()->create();
     $head = User::factory()->create(['family_id' => $family->id]);
     $member = User::factory()->create(['family_id' => $family->id]);
-    Permission::findOrCreate('view-all-transactions', 'web');
-    $head->givePermissionTo('view-all-transactions');
+    $head->assignRole(familyHeadRole());
     $member->assignRole(familyMemberRole());
 
     $this->actingAs($head)
