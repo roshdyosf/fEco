@@ -1,13 +1,3 @@
-FROM node:22-bookworm-slim AS frontend
-
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-RUN npm install
-
-COPY . .
-RUN npm run build
-
 FROM php:8.4-fpm-bookworm AS app
 
 ENV APP_ENV=production \
@@ -38,6 +28,7 @@ RUN apt-get update \
     && rm -f /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY --from=node:22-bookworm-slim /usr/local/ /usr/local/
 
 WORKDIR /var/www/html
 
@@ -50,7 +41,9 @@ RUN composer install \
         --prefer-dist \
         --optimize-autoloader
 
-COPY --from=frontend /app/public/build ./public/build
+RUN npm install \
+    && npm run build
+
 COPY docker/nginx/default.conf /etc/nginx/templates/default.conf.template
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
