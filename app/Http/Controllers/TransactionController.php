@@ -8,6 +8,8 @@ use App\Services\TransactionService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class TransactionController extends Controller
 {
@@ -32,8 +34,16 @@ class TransactionController extends Controller
             $this->transactionService->createTransaction($request->validated(), Auth::user());
 
             return redirect()->back()->with('success', 'Transaction added successfully and family balance updated.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to add transaction: '.$e->getMessage());
+        } catch (Throwable $e) {
+            Log::error('Transaction creation failed.', [
+                'user_id' => Auth::id(),
+                'exception' => $e,
+            ]);
+
+            return redirect()->back()->with(
+                'error',
+                __('Unable to add the transaction. Please try again.'),
+            );
         }
     }
 }

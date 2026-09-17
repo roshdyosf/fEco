@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Transaction;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -13,7 +14,7 @@ class TransactionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        return $this->user()?->can('create', Transaction::class) ?? false;
     }
 
     /**
@@ -33,7 +34,8 @@ class TransactionRequest extends FormRequest
                 'required',
                 'integer',
                 Rule::exists('categories', 'id')->where(function ($query) use ($user) {
-                    return $query->where('family_id', $user->family_id);
+                    return $query->where('family_id', $user->family_id)
+                        ->where('type', $this->input('type'));
                 }),
             ],
 

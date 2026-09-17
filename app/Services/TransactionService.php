@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Category;
 use App\Models\Family;
 use App\Models\Transaction;
 use App\Models\User;
@@ -15,6 +16,12 @@ class TransactionService
     public function createTransaction(array $data, User $user): Transaction
     {
         return DB::transaction(function () use ($data, $user) {
+            Category::query()
+                ->whereKey($data['category_id'])
+                ->where('family_id', $user->family_id)
+                ->where('type', $data['type'])
+                ->firstOrFail();
+
             $transaction = Transaction::create([
                 'family_id' => $user->family_id,
                 'user_id' => $user->id,
