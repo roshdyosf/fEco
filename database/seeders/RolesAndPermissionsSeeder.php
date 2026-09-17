@@ -36,6 +36,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'create-transaction',
             'edit-own-transaction',
             'delete-own-transaction',
+            'manage-categories',
         ]);
     }
 }
