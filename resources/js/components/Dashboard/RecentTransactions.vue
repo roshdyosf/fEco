@@ -54,7 +54,7 @@ const formatCurrency = (amount: number): string =>
                         class="border-b border-gray-100 text-xs tracking-wider text-gray-400 uppercase dark:border-gray-700 dark:text-gray-500"
                     >
                         <tr>
-                            <th class="pb-3 font-semibold">Title</th>
+                            <th class="pb-3 font-semibold">Description</th>
                             <th class="pb-3 font-semibold">Category</th>
                             <th class="pb-3 font-semibold">Date</th>
                             <th class="pb-3 text-right font-semibold">
@@ -73,7 +73,7 @@ const formatCurrency = (amount: number): string =>
                             <td
                                 class="py-4 font-medium text-gray-900 dark:text-white"
                             >
-                                {{ transaction.title }}
+                                {{ transaction.description || 'No description' }}
                             </td>
                             <td class="py-4">
                                 <span
