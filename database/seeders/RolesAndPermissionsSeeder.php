@@ -13,7 +13,29 @@ class RolesAndPermissionsSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        Role::firstOrCreate(['name' => 'family-head', 'guard_name' => 'web']);
-        Role::firstOrCreate(['name' => 'family-member', 'guard_name' => 'web']);
+        $permissions = [
+            'manage-family-members',
+            'manage-categories',
+            'view-all-transactions',
+            'create-transaction',
+            'edit-own-transaction',
+            'delete-own-transaction',
+            'manage-budgets',
+        ];
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
+        }
+
+        // Family Head Role (gets all permissions)
+        $familyHeadRole = Role::firstOrCreate(['name' => 'family-head']);
+        $familyHeadRole->givePermissionTo(Permission::all());
+
+        // Family Member Role (gets specific permissions)
+        $familyMemberRole = Role::firstOrCreate(['name' => 'family-member']);
+        $familyMemberRole->givePermissionTo([
+            'create-transaction',
+            'edit-own-transaction',
+            'delete-own-transaction',
+        ]);
     }
 }
