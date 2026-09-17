@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from '@lucide/vue';
-import { nextTick, onMounted, ref, useTemplateRef } from 'vue';
+import { nextTick, onBeforeUnmount, ref, useTemplateRef } from 'vue';
 import AlertError from '@/components/AlertError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,27 +14,31 @@ import {
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import { regenerateRecoveryCodes } from '@/routes/two-factor';
 
-const { recoveryCodesList, fetchRecoveryCodes, errors } = useTwoFactorAuth();
+const { recoveryCodesList, fetchRecoveryCodes, clearRecoveryCodes, errors } =
+    useTwoFactorAuth();
 const isRecoveryCodesVisible = ref<boolean>(false);
 const recoveryCodeSectionRef = useTemplateRef('recoveryCodeSectionRef');
 
 const toggleRecoveryCodesVisibility = async () => {
-    if (!isRecoveryCodesVisible.value && !recoveryCodesList.value.length) {
-        await fetchRecoveryCodes();
-    }
-
-    isRecoveryCodesVisible.value = !isRecoveryCodesVisible.value;
-
     if (isRecoveryCodesVisible.value) {
-        await nextTick();
-        recoveryCodeSectionRef.value?.scrollIntoView({ behavior: 'smooth' });
-    }
-};
+        isRecoveryCodesVisible.value = false;
+        clearRecoveryCodes();
 
-onMounted(async () => {
+        return;
+    }
+
+    isRecoveryCodesVisible.value = true;
+
     if (!recoveryCodesList.value.length) {
         await fetchRecoveryCodes();
     }
+
+    await nextTick();
+    recoveryCodeSectionRef.value?.scrollIntoView({ behavior: 'smooth' });
+};
+
+onBeforeUnmount(() => {
+    clearRecoveryCodes();
 });
 </script>
 
