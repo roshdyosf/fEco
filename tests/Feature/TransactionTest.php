@@ -50,6 +50,8 @@ test('a user without transaction permission cannot view all transactions', funct
 test('a family member can create an income transaction and update the balance', function () {
     $family = Family::factory()->create(['total_balance' => 0]);
     $user = User::factory()->create(['family_id' => $family->id]);
+    Permission::findOrCreate('create-transaction', 'web');
+    $user->givePermissionTo('create-transaction');
     $category = Category::factory()->create([
         'family_id' => $family->id,
         'type' => 'income',
@@ -79,6 +81,8 @@ test('a family member can create an income transaction and update the balance', 
 test('transaction creation rejects an empty payload', function () {
     $family = Family::factory()->create();
     $user = User::factory()->create(['family_id' => $family->id]);
+    Permission::findOrCreate('create-transaction', 'web');
+    $user->givePermissionTo('create-transaction');
 
     $this->actingAs($user)
         ->from(route('dashboard'))
@@ -92,7 +96,31 @@ test('a transaction category must belong to the users family', function () {
     $family = Family::factory()->create();
     $otherFamily = Family::factory()->create();
     $user = User::factory()->create(['family_id' => $family->id]);
+    Permission::findOrCreate('create-transaction', 'web');
+    $user->givePermissionTo('create-transaction');
     $category = Category::factory()->create(['family_id' => $otherFamily->id]);
+
+    $this->actingAs($user)
+        ->from(route('dashboard'))
+        ->post(route('transactions.store'), [
+            'category_id' => $category->id,
+            'type' => 'expense',
+            'amount' => 10,
+        ])
+        ->assertSessionHasErrors('category_id');
+
+    $this->assertDatabaseCount('transactions', 0);
+});
+
+test('a transaction type must match its category type', function () {
+    $family = Family::factory()->create();
+    $user = User::factory()->create(['family_id' => $family->id]);
+    $category = Category::factory()->create([
+        'family_id' => $family->id,
+        'type' => 'income',
+    ]);
+    Permission::findOrCreate('create-transaction', 'web');
+    $user->givePermissionTo('create-transaction');
 
     $this->actingAs($user)
         ->from(route('dashboard'))
