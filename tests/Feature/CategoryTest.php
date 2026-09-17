@@ -41,6 +41,25 @@ test('a family member can create a category for their family', function () {
     ]);
 });
 
+test('guests cannot create a category', function () {
+    $this->post(route('categories.store'), [
+        'name' => 'Groceries',
+        'type' => 'expense',
+    ])->assertRedirect(route('login'));
+});
+
+test('category creation requires a name and type', function () {
+    $family = categoryFamily();
+    $user = categoryUser($family);
+
+    $this->actingAs($user)
+        ->from(route('dashboard'))
+        ->post(route('categories.store'))
+        ->assertSessionHasErrors(['name', 'type']);
+
+    $this->assertDatabaseMissing('categories', ['family_id' => $family->id]);
+});
+
 test('a category name must be unique within a family', function () {
     $family = categoryFamily();
     $user = categoryUser($family);
