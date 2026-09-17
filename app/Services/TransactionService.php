@@ -20,6 +20,7 @@ class TransactionService
                 ->whereKey($data['category_id'])
                 ->where('family_id', $user->family_id)
                 ->where('type', $data['type'])
+                ->lockForUpdate()
                 ->firstOrFail();
 
             $transaction = Transaction::create([
