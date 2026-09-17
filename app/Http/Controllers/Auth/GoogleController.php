@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
@@ -17,7 +19,7 @@ class GoogleController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
-    public function handleGoogleCallback(): RedirectResponse
+    public function handleGoogleCallback(Request $request): RedirectResponse
     {
         try {
             $googleUser = Socialite::driver('google')->user();
@@ -46,6 +48,7 @@ class GoogleController extends Controller
             }
             // login the user
             Auth::login($user);
+            $request->session()->regenerate();
 
             // redirect based on whether the user has a family or not
             if (! $user->family_id) {
@@ -53,8 +56,13 @@ class GoogleController extends Controller
             }
 
             return redirect('/dashboard');
-        } catch (\Exception $e) {
-            return redirect('/login')->with('error', 'Failed to login with Google: '.$e->getMessage());
+        } catch (\Throwable $e) {
+            Log::error('Google OAuth login failed.', ['exception' => $e]);
+
+            return redirect('/login')->with(
+                'error',
+                __('Unable to sign in with Google. Please try again.'),
+            );
         }
     }
 }
