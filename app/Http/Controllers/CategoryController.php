@@ -16,8 +16,6 @@ class CategoryController extends Controller
 
     public function store(CategoryRequest $request): RedirectResponse
     {
-        Gate::authorize('create', Category::class);
-
         $this->categoryService->createCategory($request->validated(), Auth::user());
 
         return back()->with('success', 'Category created successfully.');
