@@ -4,15 +4,23 @@ use App\Models\Category;
 use App\Models\Family;
 use App\Models\Transaction;
 use App\Models\User;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 function categoryUser(?Family $family = null): User
 {
-    return User::create([
+    $user = User::create([
         'family_id' => $family?->id,
         'name' => 'Family Member',
         'email' => fake()->unique()->safeEmail(),
         'password' => 'password',
     ]);
+
+    $role = Role::findOrCreate('family-member', 'web');
+    $role->givePermissionTo(Permission::findOrCreate('manage-categories', 'web'));
+    $user->assignRole($role);
+
+    return $user;
 }
 
 function categoryFamily(string $name = 'Test Family'): Family

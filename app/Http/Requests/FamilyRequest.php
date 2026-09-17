@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Family;
 use Illuminate\Foundation\Http\FormRequest;
 
 class FamilyRequest extends FormRequest
@@ -11,7 +12,9 @@ class FamilyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->family_id === null;
+        $ability = $this->routeIs('family.join') ? 'join' : 'create';
+
+        return $this->user()?->can($ability, Family::class) ?? false;
     }
 
     /**

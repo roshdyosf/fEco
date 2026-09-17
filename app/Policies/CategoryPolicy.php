@@ -9,12 +9,14 @@ class CategoryPolicy
 {
     public function create(User $user): bool
     {
-        return $user->family_id !== null;
+        return $user->family_id !== null
+            && $user->can('manage-categories');
     }
 
     public function delete(User $user, Category $category): bool
     {
         return $user->family_id !== null
-            && $user->family_id === $category->family_id;
+            && $user->family_id === $category->family_id
+            && $user->can('manage-categories');
     }
 }

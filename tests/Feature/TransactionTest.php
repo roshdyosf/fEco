@@ -34,8 +34,11 @@ test('a permitted family member can view paginated transactions', function () {
     $this->actingAs($user)
         ->get(route('transactions.index'))
         ->assertOk()
-        ->assertViewIs('transactions.index')
-        ->assertViewHas('transactions', fn ($transactions) => $transactions->contains($transaction));
+        ->assertInertia(fn ($page) => $page
+            ->component('Transactions/Index')
+            ->where('transactions.data.0.id', $transaction->id)
+            ->where('transactions.data.0.description', 'Rent payment')
+        );
 });
 
 test('a user without transaction permission cannot view all transactions', function () {

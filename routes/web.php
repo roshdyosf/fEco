@@ -29,8 +29,7 @@ Route::middleware('auth')->group(function () {
 // Transaction routes
 Route::middleware('auth')->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index'])
-        ->name('transactions.index')
-        ->middleware('permission:view-all-transactions');
+        ->name('transactions.index');
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');

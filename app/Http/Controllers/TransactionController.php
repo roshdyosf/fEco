@@ -5,27 +5,31 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Transaction;
 use App\Services\TransactionService;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
+use Inertia\Response;
 use Throwable;
 
 class TransactionController extends Controller
 {
     public function __construct(private TransactionService $transactionService) {}
 
-    public function index(): View
+    public function index(): Response
     {
         $user = Auth::user();
+        Gate::forUser($user)->authorize('viewAny', Transaction::class);
 
-        // Check if user can view all transactions or only their own based on permissions
         $query = Transaction::where('family_id', $user->family_id)
-            ->with(['category:id,name', 'user:id,name']);
+            ->with(['category:id,name']);
 
         $transactions = $query->latest()->paginate(15);
 
-        return view('transactions.index', compact('transactions'));
+        return Inertia::render('Transactions/Index', [
+            'transactions' => $transactions,
+        ]);
     }
 
     public function store(TransactionRequest $request): RedirectResponse

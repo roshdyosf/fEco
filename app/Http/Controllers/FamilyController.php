@@ -6,7 +6,6 @@ use App\Http\Requests\FamilyRequest;
 use App\Models\User;
 use App\Services\FamilyService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -55,6 +54,7 @@ class FamilyController extends Controller
     {
         $user = Auth::user();
         $family = $user->family;
+        Gate::forUser($user)->authorize('view', $family);
 
         // Retrieve family members with only the necessary fields
         $members = $family->users()->select('id', 'name', 'email')->get();
@@ -65,25 +65,24 @@ class FamilyController extends Controller
         ]);
     }
 
-    // regenerate invite code (allowed for family-head only)
     public function regenerateInviteCode(): RedirectResponse
     {
-        $this->familyService->regenerateCode(Auth::user()->family);
+        $user = Auth::user();
+        Gate::forUser($user)->authorize('regenerateCode', $user->family);
+
+        $this->familyService->regenerateCode($user->family);
 
         return back()->with('success', 'Invite code regenerated successfully.');
     }
 
-    // Remove a family member (allowed for family-head only)
-    public function removeMember(Request $request, User $member): RedirectResponse
+    public function removeMember(User $member): RedirectResponse
     {
         $user = Auth::user();
         Gate::forUser($user)->authorize('removeMember', [$user->family, $member]);
 
         $removed = $this->familyService->removeMember($member, $user);
 
-        if (! $removed) {
-            abort(403, 'Unauthorized action.');
-        }
+        abort_unless($removed, 422);
 
         return back()->with('success', 'Member removed successfully.');
     }
@@ -91,12 +90,7 @@ class FamilyController extends Controller
     public function leave(): RedirectResponse
     {
         $user = Auth::user();
-
-        abort_unless(
-            $user->family_id !== null
-                && ! Gate::forUser($user)->allows('delete', $user->family),
-            403,
-        );
+        Gate::forUser($user)->authorize('leave', $user->family);
 
         $this->familyService->leaveFamily($user);
 
