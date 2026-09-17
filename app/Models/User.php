@@ -34,15 +34,14 @@ use Spatie\Permission\Traits\HasRoles;
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 
-
-
 class User extends Authenticatable implements PasskeyUser
 {
-    /** @use HasFactory<UserFactory> */
-
-    use Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
-    use HasRoles;
     use HasFactory;
+
+    use HasRoles;
+    /** @use HasFactory<UserFactory> */
+    use Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+
     /**
      * Get the attributes that should be cast.
      *
@@ -56,10 +55,12 @@ class User extends Authenticatable implements PasskeyUser
         'avatar',
         'password',
     ];
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
     protected function casts(): array
     {
         return [
@@ -68,8 +69,6 @@ class User extends Authenticatable implements PasskeyUser
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
-
-
 
     public function family()
     {

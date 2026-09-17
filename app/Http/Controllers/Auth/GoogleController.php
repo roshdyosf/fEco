@@ -5,13 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
-
-
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect();
@@ -45,17 +43,17 @@ class GoogleController extends Controller
                     $user->assignRole('family-member');
                 }
             }
-            //login the user
+            // login the user
             Auth::login($user);
 
             // redirect based on whether the user has a family or not
-            if (!$user->family_id) {
+            if (! $user->family_id) {
                 return redirect('/family/setup');
             }
 
             return redirect('/dashboard');
         } catch (\Exception $e) {
-            return redirect('/login')->with('error', 'Failed to login with Google: ' . $e->getMessage());
+            return redirect('/login')->with('error', 'Failed to login with Google: '.$e->getMessage());
         }
     }
 }

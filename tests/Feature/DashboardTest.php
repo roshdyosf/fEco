@@ -27,7 +27,7 @@ test('authenticated users can visit the dashboard', function () {
         ->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(
-            fn(Assert $page) => $page
+            fn (Assert $page) => $page
                 ->component('Dashboard')
                 ->where('family.name', $family->name)
                 ->where('family.total_balance', 250)

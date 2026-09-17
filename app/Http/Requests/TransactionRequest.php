@@ -3,8 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TransactionRequest extends FormRequest
 {
@@ -24,6 +24,7 @@ class TransactionRequest extends FormRequest
     public function rules(): array
     {
         $user = $this->user();
+
         return [
             'type' => ['required', 'string', Rule::in(['expense', 'income'])],
 

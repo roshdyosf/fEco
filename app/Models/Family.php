@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Database\Factories\FamilyFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Family extends Model
 {
-    /** @use HasFactory<\Database\Factories\FamilyFactory> */
+    /** @use HasFactory<FamilyFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -15,6 +16,7 @@ class Family extends Model
         'invite_code',
         'total_balance',
     ];
+
     public function users()
     {
         return $this->hasMany(User::class);
