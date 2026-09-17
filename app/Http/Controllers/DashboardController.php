@@ -53,7 +53,11 @@ class DashboardController extends Controller
                 'invite_code' => $family->invite_code,
                 'total_balance' => $family->total_balance,
             ],
-            'categories' => $family->categories,
+            'categories' => $family->categories->map(fn ($category) => [
+                'id' => $category->id,
+                'name' => $category->name,
+                'type' => $category->type,
+            ])->values(),
             'monthly_income' => $monthlyIncome,
             'monthly_expenses' => $monthlyExpenses,
             'recent_transactions' => $recentTransactions,
