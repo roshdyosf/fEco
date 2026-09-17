@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Category;
+use App\Models\Family;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,9 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'family_id' => Family::factory(),
+            'name' => fake()->unique()->words(2, true),
+            'type' => fake()->randomElement(['expense', 'income']),
         ];
     }
 }
