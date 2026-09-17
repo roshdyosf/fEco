@@ -6,6 +6,7 @@ use App\Models\Family;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class FamilyService
 {
@@ -24,30 +25,34 @@ class FamilyService
      */
     public function createFamily(array $data, User $user): Family
     {
-        $family = Family::create([
-            'name' => $data['name'],
-            'invite_code' => $this->generateRandom(),
-            'total_balance' => 0,
-        ]);
+        return DB::transaction(function () use ($data, $user): Family {
+            $family = Family::create([
+                'name' => $data['name'],
+                'invite_code' => $this->generateRandom(),
+                'total_balance' => 0,
+            ]);
 
-        $user->update(['family_id' => $family->id]);
-        $user->assignRole('family-head');
+            $user->update(['family_id' => $family->id]);
+            $user->assignRole('family-head');
 
-        return $family;
+            return $family;
+        });
     }
 
     public function joinFamily(string $inviteCode, User $user): bool
     {
-        $family = Family::where('invite_code', $inviteCode)->first();
+        return DB::transaction(function () use ($inviteCode, $user): bool {
+            $family = Family::where('invite_code', $inviteCode)->first();
 
-        if (! $family) {
-            return false;
-        }
+            if (! $family) {
+                return false;
+            }
 
-        $user->update(['family_id' => $family->id]);
-        $user->assignRole('family-member');
+            $user->update(['family_id' => $family->id]);
+            $user->assignRole('family-member');
 
-        return true;
+            return true;
+        });
     }
 
     public function regenerateCode(Family $family): void
@@ -83,11 +88,24 @@ class FamilyService
     public function deleteFamily(User $head): void
     {
         DB::transaction(function () use ($head): void {
-            $family = $head->family;
+            $family = Family::query()
+                ->whereKey($head->family_id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-            $family?->delete();
-            $head->update(['family_id' => null]);
-            $head->removeRole('family-head');
+            $members = $family->users()->get();
+
+            foreach ($members as $member) {
+                $member->update(['family_id' => null]);
+
+                foreach (['family-head', 'family-member'] as $roleName) {
+                    if (Role::where('name', $roleName)->exists()) {
+                        $member->removeRole($roleName);
+                    }
+                }
+            }
+
+            $family->delete();
         });
     }
 }
