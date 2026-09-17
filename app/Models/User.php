@@ -37,8 +37,8 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements PasskeyUser
 {
     use HasFactory;
-
     use HasRoles;
+
     /** @use HasFactory<UserFactory> */
     use Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
