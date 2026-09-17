@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\TransactionService;
 use App\Http\Requests\TransactionRequest;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Transaction;
+use App\Services\TransactionService;
 use Illuminate\Http\RedirectResponse;
-
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
     public function __construct(private TransactionService $transactionService) {}
 
-    public function index(TransactionRequest $request)
+    public function index()
     {
         $user = Auth::user();
 
@@ -26,7 +25,6 @@ class TransactionController extends Controller
         return view('transactions.index', compact('transactions'));
     }
 
-
     public function store(TransactionRequest $request): RedirectResponse
     {
         try {
@@ -34,7 +32,7 @@ class TransactionController extends Controller
 
             return redirect()->back()->with('success', 'Transaction added successfully and family balance updated.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to add transaction: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to add transaction: '.$e->getMessage());
         }
     }
 }
