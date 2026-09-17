@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\FamilyRequest;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Services\FamilyService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Inertia\Inertia;
 
 class FamilyController extends Controller
 {
     public function __construct(private FamilyService $familyService) {}
+
     // Show family setup page
     public function showSetup()
     {
@@ -20,9 +23,9 @@ class FamilyController extends Controller
         if ($user->family_id) {
             return redirect()->route('dashboard');
         }
+
         return Inertia::render('Family/Setup');
     }
-
 
     // Family creation logic
     public function store(FamilyRequest $request)
@@ -31,7 +34,7 @@ class FamilyController extends Controller
         $data = $request->validated();
         $family = $this->familyService->createFamily($data, Auth::user());
 
-        return redirect()->route('dashboard')->with('success', 'Family created successfully! Your invite code is: ' . $family->invite_code);
+        return redirect()->route('dashboard')->with('success', 'Family created successfully! Your invite code is: '.$family->invite_code);
     }
 
     // Join family using invite code
@@ -39,9 +42,10 @@ class FamilyController extends Controller
     {
         $data = $request->validated();
         $joined = $this->familyService->joinFamily($request->invite_code, Auth::user());
-        if (!$joined) {
+        if (! $joined) {
             return back()->withErrors(['invite_code' => 'Invalid invite code.']);
         }
+
         return redirect()->route('dashboard');
     }
 
@@ -56,11 +60,11 @@ class FamilyController extends Controller
 
         return Inertia::render('Family/Settings', [
             'family' => $family,
-            'members' => $members
+            'members' => $members,
         ]);
     }
 
-    //regenerate invite code (allowed for family-head only)
+    // regenerate invite code (allowed for family-head only)
     public function regenerateInviteCode()
     {
         $this->familyService->regenerateCode(Auth::user()->family);
@@ -71,11 +75,36 @@ class FamilyController extends Controller
     // Remove a family member (allowed for family-head only)
     public function removeMember(Request $request, User $member)
     {
+        abort_unless(Gate::forUser(Auth::user())->allows('view-all-transactions'), 403);
+
         $removed = $this->familyService->removeMember($member, Auth::user());
 
-        if (!$removed) {
+        if (! $removed) {
             abort(403, 'Unauthorized action.');
         }
+
         return back()->with('success', 'Member removed successfully.');
+    }
+
+    public function leave(): RedirectResponse
+    {
+        $user = Auth::user();
+
+        abort_unless($user->family_id !== null && ! Gate::forUser($user)->allows('view-all-transactions'), 403);
+
+        $this->familyService->leaveFamily($user);
+
+        return redirect()->route('family.setup')->with('success', 'You left the family successfully.');
+    }
+
+    public function destroy(): RedirectResponse
+    {
+        $user = Auth::user();
+
+        abort_unless($user->family_id !== null && Gate::forUser($user)->allows('view-all-transactions'), 403);
+
+        $this->familyService->deleteFamily($user);
+
+        return redirect()->route('family.setup')->with('success', 'Family deleted successfully.');
     }
 }
