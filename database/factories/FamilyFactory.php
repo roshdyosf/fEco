@@ -18,7 +18,9 @@ class FamilyFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->company(),
+            'invite_code' => fake()->unique()->bothify('????####'),
+            'total_balance' => 0,
         ];
     }
 }
