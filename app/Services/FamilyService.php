@@ -6,7 +6,6 @@ use App\Models\Family;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
 
 class FamilyService
 {
