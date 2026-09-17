@@ -100,9 +100,9 @@ class FamilyService
             $members = $family->users()->get();
 
             foreach ($members as $member) {
-                $member->update(['family_id' => null]);
                 $member->removeRole('family-head');
                 $member->removeRole('family-member');
+                $member->update(['family_id' => null]);
             }
 
             $family->delete();
