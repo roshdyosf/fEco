@@ -1,9 +1,10 @@
 # Family Eco
+<img width="1916" height="908" alt="image" src="https://github.com/user-attachments/assets/7f1026be-8f0e-4fac-90b4-87cc28e4e857" />
+<img width="1904" height="906" alt="image" src="https://github.com/user-attachments/assets/3026c65c-c5c6-4366-9417-29b289f9661b" />
 
 ![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?logo=laravel&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)
 ![Vue](https://img.shields.io/badge/Vue-3.x-4FC08D?logo=vue.js&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-blue)
 
 Family Eco is a household finance application for managing shared family
 finances. Authenticated users can create or join a family with an invite code,
