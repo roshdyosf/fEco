@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Carbon\Carbon;
-use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -16,10 +15,10 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         // Load family and its categories
-        $user->load('family.categories');
+        $user->load('family.categories', 'family.users');
         $family = $user->family;
 
-        if (!$family) {
+        if (! $family) {
             return redirect('/family/setup');
         }
 
@@ -53,6 +52,13 @@ class DashboardController extends Controller
                 'invite_code' => $family->invite_code,
                 'total_balance' => $family->total_balance,
             ],
+            'is_family_head' => $user->hasRole('family-head'),
+            'current_user_id' => $user->id,
+            'members' => $family->users->map(fn ($member) => [
+                'id' => $member->id,
+                'name' => $member->name,
+                'email' => $member->email,
+            ])->values(),
             'categories' => $family->categories->map(fn ($category) => [
                 'id' => $category->id,
                 'name' => $category->name,
