@@ -76,9 +76,10 @@ class FamilyController extends Controller
     // Remove a family member (allowed for family-head only)
     public function removeMember(Request $request, User $member): RedirectResponse
     {
-        abort_unless(Gate::forUser(Auth::user())->allows('view-all-transactions'), 403);
+        $user = Auth::user();
+        Gate::forUser($user)->authorize('removeMember', [$user->family, $member]);
 
-        $removed = $this->familyService->removeMember($member, Auth::user());
+        $removed = $this->familyService->removeMember($member, $user);
 
         if (! $removed) {
             abort(403, 'Unauthorized action.');
@@ -91,7 +92,11 @@ class FamilyController extends Controller
     {
         $user = Auth::user();
 
-        abort_unless($user->family_id !== null && ! Gate::forUser($user)->allows('view-all-transactions'), 403);
+        abort_unless(
+            $user->family_id !== null
+                && ! Gate::forUser($user)->allows('delete', $user->family),
+            403,
+        );
 
         $this->familyService->leaveFamily($user);
 
@@ -102,7 +107,7 @@ class FamilyController extends Controller
     {
         $user = Auth::user();
 
-        abort_unless($user->family_id !== null && Gate::forUser($user)->allows('view-all-transactions'), 403);
+        Gate::forUser($user)->authorize('delete', $user->family);
 
         $this->familyService->deleteFamily($user);
 
