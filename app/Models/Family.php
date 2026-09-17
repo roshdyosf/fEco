@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\FamilyFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Family extends Model
 {
@@ -17,17 +18,20 @@ class Family extends Model
         'total_balance',
     ];
 
-    public function users()
+    /** @return HasMany<User, $this> */
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }
 
-    public function categories()
+    /** @return HasMany<Category, $this> */
+    public function categories(): HasMany
     {
         return $this->hasMany(Category::class);
     }
 
-    public function transactions()
+    /** @return HasMany<Transaction, $this> */
+    public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
     }

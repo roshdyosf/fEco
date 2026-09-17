@@ -4,22 +4,25 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
 
 class GoogleController extends Controller
 {
-    public function redirectToGoogle()
+    public function redirectToGoogle(): SymfonyRedirectResponse
     {
         return Socialite::driver('google')->redirect();
     }
 
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(): RedirectResponse
     {
         try {
             $googleUser = Socialite::driver('google')->user();
 
+            /** @var object{id: string, email: string, name: string, avatar: string} $googleUser */
             $user = User::where('google_id', $googleUser->id)
                 ->orWhere('email', $googleUser->email)
                 ->first();
@@ -39,9 +42,7 @@ class GoogleController extends Controller
                     'avatar' => $googleUser->avatar,
                     'password' => bcrypt(Str::random(16)),
                 ]);
-                if (method_exists($user, 'assignRole')) {
-                    $user->assignRole('family-member');
-                }
+                $user->assignRole('family-member');
             }
             // login the user
             Auth::login($user);
@@ -53,7 +54,7 @@ class GoogleController extends Controller
 
             return redirect('/dashboard');
         } catch (\Exception $e) {
-            return redirect('/login')->with('error', 'Failed to login with Google: '.$e->getMessage());
+            return redirect('/login')->with('error', 'Failed to login with Google: ' . $e->getMessage());
         }
     }
 }

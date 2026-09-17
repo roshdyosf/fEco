@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionService
 {
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function createTransaction(array $data, User $user): Transaction
     {
         return DB::transaction(function () use ($data, $user) {

@@ -8,6 +8,9 @@ use DomainException;
 
 class CategoryService
 {
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function createCategory(array $data, User $user): Category
     {
         return Category::create([

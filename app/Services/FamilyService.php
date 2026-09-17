@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class FamilyService
 {
-    public function generateRandom()
+    public function generateRandom(): string
     {
         $num = Str::upper(Str::random(8));
         while (Family::where('invite_code', $num)->exists()) {
@@ -19,6 +19,9 @@ class FamilyService
         return $num;
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function createFamily(array $data, User $user): Family
     {
         $family = Family::create([

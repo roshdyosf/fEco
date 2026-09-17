@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TransactionRequest;
 use App\Models\Transaction;
 use App\Services\TransactionService;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +13,7 @@ class TransactionController extends Controller
 {
     public function __construct(private TransactionService $transactionService) {}
 
-    public function index()
+    public function index(): View
     {
         $user = Auth::user();
 

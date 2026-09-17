@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\TransactionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transaction extends Model
 {
@@ -20,17 +21,20 @@ class Transaction extends Model
         'description',
     ];
 
-    public function family()
+    /** @return BelongsTo<Family, $this> */
+    public function family(): BelongsTo
     {
         return $this->belongsTo(Family::class);
     }
 
-    public function user()
+    /** @return BelongsTo<User, $this> */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function category()
+    /** @return BelongsTo<Category, $this> */
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }

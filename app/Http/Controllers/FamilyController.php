@@ -10,13 +10,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class FamilyController extends Controller
 {
     public function __construct(private FamilyService $familyService) {}
 
     // Show family setup page
-    public function showSetup()
+    public function showSetup(): Response|RedirectResponse
     {
         /** @var User $user */
         $user = Auth::user();
@@ -28,7 +29,7 @@ class FamilyController extends Controller
     }
 
     // Family creation logic
-    public function store(FamilyRequest $request)
+    public function store(FamilyRequest $request): RedirectResponse
     {
 
         $data = $request->validated();
@@ -38,7 +39,7 @@ class FamilyController extends Controller
     }
 
     // Join family using invite code
-    public function join(FamilyRequest $request)
+    public function join(FamilyRequest $request): RedirectResponse
     {
         $data = $request->validated();
         $joined = $this->familyService->joinFamily($request->invite_code, Auth::user());
@@ -50,7 +51,7 @@ class FamilyController extends Controller
     }
 
     // Show family settings page
-    public function settings()
+    public function settings(): Response
     {
         $user = Auth::user();
         $family = $user->family;
@@ -65,7 +66,7 @@ class FamilyController extends Controller
     }
 
     // regenerate invite code (allowed for family-head only)
-    public function regenerateInviteCode()
+    public function regenerateInviteCode(): RedirectResponse
     {
         $this->familyService->regenerateCode(Auth::user()->family);
 
@@ -73,7 +74,7 @@ class FamilyController extends Controller
     }
 
     // Remove a family member (allowed for family-head only)
-    public function removeMember(Request $request, User $member)
+    public function removeMember(Request $request, User $member): RedirectResponse
     {
         abort_unless(Gate::forUser(Auth::user())->allows('view-all-transactions'), 403);
 
