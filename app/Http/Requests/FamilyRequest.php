@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class FamilyRequest extends FormRequest
@@ -12,18 +11,24 @@ class FamilyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->family_id === null;
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
+        if ($this->routeIs('family.join')) {
+            return [
+                'invite_code' => ['required', 'string', 'max:32'],
+            ];
+        }
+
         return [
-            'name' => 'required|string|max:255'
+            'name' => ['required', 'string', 'max:255'],
         ];
     }
 }
