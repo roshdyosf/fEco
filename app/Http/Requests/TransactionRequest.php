@@ -39,7 +39,7 @@ class TransactionRequest extends FormRequest
                 }),
             ],
 
-            'amount' => ['required', 'numeric', 'min:0.01'],
+            'amount' => ['required', 'numeric', 'min:0.01', 'max:99999999.99', 'regex:/^\d+(\.\d{1,2})?$/'],
 
             'description' => ['nullable', 'string', 'max:500'],
         ];
