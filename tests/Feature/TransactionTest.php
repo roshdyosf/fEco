@@ -1,0 +1,107 @@
+<?php
+
+use App\Models\Category;
+use App\Models\Family;
+use App\Models\Transaction;
+use App\Models\User;
+use Spatie\Permission\Models\Permission;
+
+function transactionUser(Family $family): User
+{
+    $user = User::factory()->create(['family_id' => $family->id]);
+    Permission::findOrCreate('view-all-transactions', 'web');
+
+    return $user;
+}
+
+test('guests cannot view transactions', function () {
+    $this->get(route('transactions.index'))
+        ->assertRedirect(route('login'));
+});
+
+test('a permitted family member can view paginated transactions', function () {
+    $family = Family::factory()->create();
+    $user = transactionUser($family);
+    $user->givePermissionTo('view-all-transactions');
+    $category = Category::factory()->create(['family_id' => $family->id]);
+    $transaction = Transaction::factory()->create([
+        'family_id' => $family->id,
+        'user_id' => $user->id,
+        'category_id' => $category->id,
+        'description' => 'Rent payment',
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('transactions.index'))
+        ->assertOk()
+        ->assertViewIs('transactions.index')
+        ->assertViewHas('transactions', fn ($transactions) => $transactions->contains($transaction));
+});
+
+test('a user without transaction permission cannot view all transactions', function () {
+    $family = Family::factory()->create();
+    $user = User::factory()->create(['family_id' => $family->id]);
+
+    $this->actingAs($user)
+        ->get(route('transactions.index'))
+        ->assertForbidden();
+});
+
+test('a family member can create an income transaction and update the balance', function () {
+    $family = Family::factory()->create(['total_balance' => 0]);
+    $user = User::factory()->create(['family_id' => $family->id]);
+    $category = Category::factory()->create([
+        'family_id' => $family->id,
+        'type' => 'income',
+    ]);
+
+    $this->actingAs($user)
+        ->from(route('dashboard'))
+        ->post(route('transactions.store'), [
+            'category_id' => $category->id,
+            'type' => 'income',
+            'amount' => 125.50,
+            'description' => 'Salary',
+        ])
+        ->assertRedirect(route('dashboard'))
+        ->assertSessionHas('success');
+
+    $this->assertDatabaseHas('transactions', [
+        'family_id' => $family->id,
+        'user_id' => $user->id,
+        'category_id' => $category->id,
+        'amount' => 125.50,
+        'type' => 'income',
+    ]);
+    expect((float) $family->refresh()->total_balance)->toBe(125.5);
+});
+
+test('transaction creation rejects an empty payload', function () {
+    $family = Family::factory()->create();
+    $user = User::factory()->create(['family_id' => $family->id]);
+
+    $this->actingAs($user)
+        ->from(route('dashboard'))
+        ->post(route('transactions.store'))
+        ->assertSessionHasErrors(['type', 'category_id', 'amount']);
+
+    $this->assertDatabaseCount('transactions', 0);
+});
+
+test('a transaction category must belong to the users family', function () {
+    $family = Family::factory()->create();
+    $otherFamily = Family::factory()->create();
+    $user = User::factory()->create(['family_id' => $family->id]);
+    $category = Category::factory()->create(['family_id' => $otherFamily->id]);
+
+    $this->actingAs($user)
+        ->from(route('dashboard'))
+        ->post(route('transactions.store'), [
+            'category_id' => $category->id,
+            'type' => 'expense',
+            'amount' => 10,
+        ])
+        ->assertSessionHasErrors('category_id');
+
+    $this->assertDatabaseCount('transactions', 0);
+});
