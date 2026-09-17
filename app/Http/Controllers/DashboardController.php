@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Carbon\CarbonImmutable;
+use App\Services\DashboardService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -11,62 +11,18 @@ use Inertia\Response;
 
 class DashboardController extends Controller
 {
+    public function __construct(private DashboardService $dashboardService) {}
+
     public function index(): Response|RedirectResponse
     {
-
-        // Load family and its categories
         /** @var User $user */
         $user = Auth::user();
-        $user->load('family.categories', 'family.users');
 
-        $family = $user->family;
-        if (! $family) {
-            return redirect('/family/setup');
+        $dashboardData = $this->dashboardService->getDashboardData($user);
+        if ($dashboardData === null) {
+            return redirect()->route('family.setup');
         }
 
-        $startOfMonth = CarbonImmutable::now()->startOfMonth();
-        $endOfMonth = CarbonImmutable::now()->endOfMonth();
-
-        // Calculate monthly income using created_at
-        $monthlyIncome = $family->transactions()
-            ->where('type', 'income')
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->sum('amount');
-
-        // Calculate monthly expenses using created_at
-        $monthlyExpenses = $family->transactions()
-            ->where('type', 'expense')
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->sum('amount');
-
-        // Fetch recent transactions with relations
-        $recentTransactions = $family->transactions()
-            ->with(['user:id,name', 'category:id,name'])
-            ->latest()
-            ->limit(10)
-            ->get();
-
-        return Inertia::render('Dashboard', [
-            'family' => [
-                'name' => $family->name,
-                'invite_code' => $family->invite_code,
-                'total_balance' => $family->total_balance,
-            ],
-            'is_family_head' => $user->hasRole('family-head'),
-            'current_user_id' => $user->id,
-            'members' => $family->users->map(fn ($member) => [
-                'id' => $member->id,
-                'name' => $member->name,
-                'email' => $member->email,
-            ])->values(),
-            'categories' => $family->categories->map(fn ($category) => [
-                'id' => $category->id,
-                'name' => $category->name,
-                'type' => $category->type,
-            ])->values(),
-            'monthly_income' => $monthlyIncome,
-            'monthly_expenses' => $monthlyExpenses,
-            'recent_transactions' => $recentTransactions,
-        ]);
+        return Inertia::render('Dashboard', $dashboardData);
     }
 }
