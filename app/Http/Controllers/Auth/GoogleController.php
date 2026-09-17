@@ -54,7 +54,7 @@ class GoogleController extends Controller
 
             return redirect('/dashboard');
         } catch (\Exception $e) {
-            return redirect('/login')->with('error', 'Failed to login with Google: ' . $e->getMessage());
+            return redirect('/login')->with('error', 'Failed to login with Google: '.$e->getMessage());
         }
     }
 }
