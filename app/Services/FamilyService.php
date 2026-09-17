@@ -80,8 +80,12 @@ class FamilyService
     public function leaveFamily(User $user): void
     {
         DB::transaction(function () use ($user): void {
+            $family = $user->family;
             $user->update(['family_id' => null]);
             $user->removeRole('family-member');
+            if ($family) {
+                $family->update(['invite_code' => $this->generateRandom()]);
+            }
         });
     }
 
@@ -97,12 +101,8 @@ class FamilyService
 
             foreach ($members as $member) {
                 $member->update(['family_id' => null]);
-
-                foreach (['family-head', 'family-member'] as $roleName) {
-                    if (Role::where('name', $roleName)->exists()) {
-                        $member->removeRole($roleName);
-                    }
-                }
+                $member->removeRole('family-head');
+                $member->removeRole('family-member');
             }
 
             $family->delete();
