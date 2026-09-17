@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -24,21 +24,19 @@ class DashboardController extends Controller
             return redirect('/family/setup');
         }
 
-        $currentMonth = Carbon::now()->month;
-        $currentYear = Carbon::now()->year;
+        $startOfMonth = CarbonImmutable::now()->startOfMonth();
+        $endOfMonth = CarbonImmutable::now()->endOfMonth();
 
         // Calculate monthly income using created_at
         $monthlyIncome = $family->transactions()
             ->where('type', 'income')
-            ->whereMonth('created_at', $currentMonth)
-            ->whereYear('created_at', $currentYear)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->sum('amount');
 
         // Calculate monthly expenses using created_at
         $monthlyExpenses = $family->transactions()
             ->where('type', 'expense')
-            ->whereMonth('created_at', $currentMonth)
-            ->whereYear('created_at', $currentYear)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->sum('amount');
 
         // Fetch recent transactions with relations
