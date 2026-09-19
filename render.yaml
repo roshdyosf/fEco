@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: family-eco-app
+    runtime: php
+    region: frankfurt # Choose the closest region to you
+    plan: free # Or your preferred plan
+    buildCommand: "./render-build.sh"
+    startCommand: "php -S 0.0.0.0:$PORT -t public"
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_CHANNEL
+        value: stderr
