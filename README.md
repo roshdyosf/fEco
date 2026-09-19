@@ -22,7 +22,7 @@ assets and Laravel Wayfinder generates typed frontend route helpers.
 
 Try the project live here:
 
-- https://feco-production-bbd5.up.railway.app/
+- https://feco.onrender.com/
 
 ## Features
 
