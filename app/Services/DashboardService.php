@@ -19,24 +19,34 @@ class DashboardService
             return null;
         }
 
+        $categoriesKeyed = $family->categories->keyBy('id');
+
         $startOfMonth = CarbonImmutable::now()->startOfMonth();
         $endOfMonth = CarbonImmutable::now()->endOfMonth();
 
-        $monthlyIncome = $family->transactions()
-            ->where('type', 'income')
+        $transactions = $family->transactions()
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->sum('amount');
-
-        $monthlyExpenses = $family->transactions()
-            ->where('type', 'expense')
-            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->sum('amount');
-
-        $recentTransactions = $family->transactions()
-            ->with(['user:id,name', 'category:id,name'])
+            ->with(['user:id,name'])
             ->latest()
-            ->limit(10)
             ->get();
+
+        $transactions->transform(function ($transaction) use ($categoriesKeyed) {
+            if ($transaction->category_id && $categoriesKeyed->has($transaction->category_id)) {
+                $transaction->setRelation('category', $categoriesKeyed->get($transaction->category_id));
+            }
+
+            return $transaction;
+        });
+
+        $monthlyIncome = $transactions
+            ->where('type', 'income')
+            ->sum('amount');
+
+        $monthlyExpenses = $transactions
+            ->where('type', 'expense')
+            ->sum('amount');
+
+        $recentTransactions = $transactions->take(10)->values();
 
         return [
             'family' => [

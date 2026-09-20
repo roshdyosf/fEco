@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
@@ -28,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
         $this->configureDefaults();
+        Model::preventLazyLoading();
     }
 
     /**
