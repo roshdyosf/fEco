@@ -45,6 +45,7 @@ class CategoryService
                 'name' => $category->name,
                 'total' => (float) ($category->total ?? 0),
             ])
+            ->values()
             ->all();
 
         $totalIncome = Transaction::query()
@@ -53,7 +54,7 @@ class CategoryService
             ->sum('amount');
 
         return [
-            'top_expense_categories' => $topExpenseCategories,
+            'top_expense_categories' => array_values($topExpenseCategories),
             'total_income' => (float) $totalIncome,
         ];
     }
