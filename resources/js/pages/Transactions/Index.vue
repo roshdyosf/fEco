@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ArrowLeft } from '@lucide/vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import { index as dashboardIndex } from '@/actions/App/Http/Controllers/DashboardController';
-import type { Transaction } from '@/components/Dashboard/types';
+import { index as transactionIndex } from '@/actions/App/Http/Controllers/TransactionController';
+import type { Category, Transaction } from '@/components/Dashboard/types';
 
 type PaginationLink = {
     url: string | null;
@@ -22,9 +24,28 @@ type TransactionPage = {
 
 type Props = {
     transactions: TransactionPage;
+    categories: Category[];
+    selected_category_id: number | null;
+    statistics?: {
+        top_expense_categories: Array<{
+            id: number;
+            name: string;
+            total: number;
+        }>;
+        total_income: number;
+    };
 };
 
 const props = defineProps<Props>();
+const selectedCategory = ref<number | ''>(props.selected_category_id ?? '');
+
+const filterByCategory = (): void => {
+    router.get(
+        transactionIndex(),
+        { category_id: selectedCategory.value || undefined },
+        { preserveState: true, preserveScroll: true, replace: true },
+    );
+};
 
 const formatDate = (date: string): string =>
     new Intl.DateTimeFormat('en-US', {
@@ -63,6 +84,89 @@ const formatCurrency = (amount: number | string): string =>
                     <span>Back</span>
                 </Link>
             </div>
+
+            <section
+                class="flex flex-col gap-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-900/5 sm:flex-row sm:items-center sm:justify-between dark:bg-gray-800 dark:ring-white/10"
+            >
+                <label
+                    for="category-filter"
+                    class="text-sm font-medium text-gray-700 dark:text-gray-200"
+                >
+                    Filter by category
+                </label>
+                <select
+                    id="category-filter"
+                    v-model="selectedCategory"
+                    class="rounded-md border-gray-300 bg-white text-sm text-gray-700 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+                    @change="filterByCategory"
+                >
+                    <option value="">All categories</option>
+                    <option
+                        v-for="category in props.categories"
+                        :key="category.id"
+                        :value="category.id"
+                    >
+                        {{ category.name }}
+                    </option>
+                </select>
+            </section>
+
+            <section
+                v-if="props.statistics"
+                class="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_2fr]"
+            >
+                <div
+                    class="rounded-2xl bg-emerald-50 p-5 ring-1 ring-emerald-600/10 dark:bg-emerald-950/30 dark:ring-emerald-400/20"
+                >
+                    <p
+                        class="text-xs font-semibold tracking-wider text-emerald-700 uppercase dark:text-emerald-300"
+                    >
+                        Total income
+                    </p>
+                    <p
+                        class="mt-3 text-3xl font-bold text-emerald-700 dark:text-emerald-300"
+                    >
+                        {{ formatCurrency(props.statistics.total_income) }}
+                    </p>
+                </div>
+                <div
+                    class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-900/5 dark:bg-gray-800 dark:ring-white/10"
+                >
+                    <p
+                        class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400"
+                    >
+                        Top expense categories
+                    </p>
+                    <div
+                        v-if="props.statistics.top_expense_categories.length"
+                        class="mt-4 grid gap-3 sm:grid-cols-3"
+                    >
+                        <div
+                            v-for="category in props.statistics
+                                .top_expense_categories"
+                            :key="category.id"
+                            class="rounded-lg bg-gray-50 p-3 dark:bg-gray-700/60"
+                        >
+                            <p
+                                class="truncate text-sm font-medium text-gray-700 dark:text-gray-200"
+                            >
+                                {{ category.name }}
+                            </p>
+                            <p
+                                class="mt-1 text-lg font-bold text-rose-600 dark:text-rose-400"
+                            >
+                                {{ formatCurrency(category.total) }}
+                            </p>
+                        </div>
+                    </div>
+                    <p
+                        v-else
+                        class="mt-4 text-sm text-gray-500 dark:text-gray-400"
+                    >
+                        No expense categories have transactions yet.
+                    </p>
+                </div>
+            </section>
 
             <section
                 class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-900/5 dark:bg-gray-800 dark:ring-white/10"
