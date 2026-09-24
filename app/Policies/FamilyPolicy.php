@@ -22,6 +22,12 @@ class FamilyPolicy
         return $user->family_id === $family->id;
     }
 
+    public function viewStatistics(User $user, Family $family): bool
+    {
+        return $user->family_id === $family->id
+            && $user->hasRole('family-head');
+    }
+
     public function regenerateCode(User $user, Family $family): bool
     {
         return $user->family_id === $family->id
