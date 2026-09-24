@@ -5,6 +5,7 @@ use App\Models\Family;
 use App\Models\Transaction;
 use App\Models\User;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 function transactionUser(Family $family): User
 {
@@ -34,10 +35,79 @@ test('a permitted family member can view paginated transactions', function () {
     $this->actingAs($user)
         ->get(route('transactions.index'))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page
-            ->component('Transactions/Index')
-            ->where('transactions.data.0.id', $transaction->id)
-            ->where('transactions.data.0.description', 'Rent payment')
+        ->assertInertia(
+            fn ($page) => $page
+                ->component('Transactions/Index')
+                ->where('transactions.data.0.id', $transaction->id)
+                ->where('transactions.data.0.description', 'Rent payment')
+                ->missing('statistics')
+        );
+});
+
+test('only a family head sees family transaction statistics', function () {
+    $family = Family::factory()->create();
+    $head = transactionUser($family);
+    Role::findOrCreate('family-head', 'web');
+    $head->assignRole('family-head');
+    $head->givePermissionTo('view-all-transactions');
+    $rent = Category::factory()->create([
+        'family_id' => $family->id,
+        'name' => 'Rent',
+        'type' => 'expense',
+    ]);
+    $food = Category::factory()->create([
+        'family_id' => $family->id,
+        'name' => 'Food',
+        'type' => 'expense',
+    ]);
+    $income = Category::factory()->create([
+        'family_id' => $family->id,
+        'type' => 'income',
+    ]);
+    Transaction::factory()->create([
+        'family_id' => $family->id,
+        'user_id' => $head->id,
+        'category_id' => $rent->id,
+        'amount' => 900,
+        'type' => 'expense',
+    ]);
+    Transaction::factory()->create([
+        'family_id' => $family->id,
+        'user_id' => $head->id,
+        'category_id' => $food->id,
+        'amount' => 125,
+        'type' => 'expense',
+    ]);
+    Transaction::factory()->create([
+        'family_id' => $family->id,
+        'user_id' => $head->id,
+        'category_id' => $income->id,
+        'amount' => 2500,
+        'type' => 'income',
+    ]);
+    $otherFamily = Family::factory()->create();
+    $otherCategory = Category::factory()->create([
+        'family_id' => $otherFamily->id,
+        'type' => 'expense',
+    ]);
+    Transaction::factory()->create([
+        'family_id' => $otherFamily->id,
+        'category_id' => $otherCategory->id,
+        'amount' => 9999,
+        'type' => 'expense',
+    ]);
+
+    $this->actingAs($head)
+        ->get(route('transactions.index', ['category_id' => $food->id]))
+        ->assertInertia(
+            fn ($page) => $page
+                ->where('transactions.total', 1)
+                ->where('transactions.data.0.category.id', $food->id)
+                ->where('statistics.total_income', 2500)
+                ->where('statistics.top_expense_categories.0.name', 'Rent')
+                ->where('statistics.top_expense_categories.0.total', 900)
+                ->where('statistics.top_expense_categories.1.name', 'Food')
+                ->where('statistics.top_expense_categories.1.total', 125)
         );
 });
 
