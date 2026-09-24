@@ -33,14 +33,14 @@ class CategoryService
             ->where('type', 'expense')
             ->has('transactions') // Ensures only categories with transactions are selected
             ->withSum([
-                'transactions as total' => fn($query) => $query
+                'transactions as total' => fn ($query) => $query
                     ->where('family_id', $user->family_id)
                     ->where('type', 'expense'),
             ], 'amount')
             ->orderByDesc('total')
             ->limit(3)
             ->get(['id', 'name'])
-            ->map(fn(Category $category): array => [
+            ->map(fn (Category $category): array => [
                 'id' => $category->id,
                 'name' => $category->name,
                 'total' => (float) ($category->total ?? 0),
